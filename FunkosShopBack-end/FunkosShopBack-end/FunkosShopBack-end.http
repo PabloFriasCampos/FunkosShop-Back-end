@@ -1,0 +1,6 @@
+@FunkosShopBack_end_HostAddress = http://localhost:5224
+
+GET {{FunkosShopBack_end_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
