@@ -16,7 +16,7 @@ namespace FunkosShopBack_end.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Usuario> Get() 
+        public IEnumerable<Usuario> Get()
         {
             return _dbContext.Usuarios;
         }
@@ -27,10 +27,10 @@ namespace FunkosShopBack_end.Controllers
             _dbContext.Usuarios.Add(new Usuario
             {
                 NombreUsuario = datosUsuario.GetProperty("NombreUsuario").GetString(),
-                Direccion = "DireccionTest",
-                Correo = "@test" + datosUsuario.GetProperty("NombreUsuario").GetString(),
-                Contrasena = "1234",
-                Rol = "ADMIN"
+                Direccion = datosUsuario.GetProperty("Direccion").GetString(),
+                Correo = datosUsuario.GetProperty("Correo").GetString(),
+                Contrasena = datosUsuario.GetProperty("Contrasena").GetString(),
+                Rol = "USUARIO",
             });
             _dbContext.SaveChanges();
         }
