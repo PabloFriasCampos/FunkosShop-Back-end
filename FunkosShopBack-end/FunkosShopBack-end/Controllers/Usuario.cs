@@ -35,7 +35,7 @@ namespace FunkosShopBack_end.Controllers
         }
 
         [HttpPost("login")]
-        public bool IniciarSesión([FromBody] JsonElement datosUsuario)
+        public bool IniciarSesion([FromBody] JsonElement datosUsuario)
         {
 
             return _dbContext.AutenticarUsuario(datosUsuario.GetProperty("NombreUsuario").GetString(), datosUsuario.GetProperty("Contrasena").GetString());
