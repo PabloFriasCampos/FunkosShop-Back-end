@@ -3,6 +3,7 @@
 namespace FunkosShopBack_end.Models
 {
     [Index(nameof(Correo),IsUnique = true)]
+    [Index(nameof(NombreUsuario), IsUnique = true)]
     public class Usuario
     {
         public int UsuarioId { get; set; }

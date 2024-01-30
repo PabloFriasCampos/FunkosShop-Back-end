@@ -21,10 +21,10 @@ namespace FunkosShopBack_end.Controllers
             return _dbContext.Usuarios;
         }
 
-        [HttpPost]
-        public void CrearUsuario([FromBody] JsonElement datosUsuario)
+        [HttpPost("signup")]
+        public void RegistrarUsuario([FromBody] JsonElement datosUsuario)
         {
-            _dbContext.Usuarios.Add(new Usuario
+            _dbContext.RegistrarUsuario(new Usuario
             {
                 NombreUsuario = datosUsuario.GetProperty("NombreUsuario").GetString(),
                 Direccion = datosUsuario.GetProperty("Direccion").GetString(),
@@ -32,7 +32,15 @@ namespace FunkosShopBack_end.Controllers
                 Contrasena = datosUsuario.GetProperty("Contrasena").GetString(),
                 Rol = "USUARIO",
             });
-            _dbContext.SaveChanges();
         }
+
+        [HttpPost("login")]
+        public bool IniciarSesión([FromBody] JsonElement datosUsuario)
+        {
+
+            return _dbContext.AutenticarUsuario(datosUsuario.GetProperty("NombreUsuario").GetString(), datosUsuario.GetProperty("Contrasena").GetString());
+
+        }
+
     }
 }

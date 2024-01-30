@@ -17,5 +17,17 @@ namespace FunkosShopBack_end
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             options.UseSqlite($"DataSource={baseDir}{DATABASE_PATH}");
         }
+
+        public void RegistrarUsuario(Usuario usuario)
+        {
+            Usuarios.Add(usuario);
+            SaveChanges();
+        }
+
+        public bool AutenticarUsuario(string nombreUsuario, string contrasena)
+        {
+            return Usuarios.Any(usuario => usuario.NombreUsuario == nombreUsuario && usuario.Contrasena == contrasena);
+        }
+
     }
 }
