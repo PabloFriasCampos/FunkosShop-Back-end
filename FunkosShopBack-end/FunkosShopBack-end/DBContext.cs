@@ -24,6 +24,12 @@ namespace FunkosShopBack_end
             SaveChanges();
         }
 
+        public void RegistrarProducto(Producto producto)
+        {
+            Productos.Add(producto);
+            SaveChanges();
+        }
+
         public bool AutenticarUsuario(string nombreUsuario, string contrasena)
         {
             return Usuarios.Any(usuario => usuario.NombreUsuario == nombreUsuario && usuario.Contrasena == contrasena);

@@ -6,11 +6,11 @@ namespace FunkosShopBack_end.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UsuarioController : ControllerBase
+    public class UsuariosController : ControllerBase
     {
         private DBContext _dbContext;
 
-        public UsuarioController(DBContext dbContext)
+        public UsuariosController(DBContext dbContext)
         {
             _dbContext = dbContext;
         }
