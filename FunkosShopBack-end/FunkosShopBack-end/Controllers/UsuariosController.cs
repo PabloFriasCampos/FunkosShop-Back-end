@@ -4,8 +4,8 @@ using System.Text.Json;
 
 namespace FunkosShopBack_end.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
     public class UsuariosController : ControllerBase
     {
         private DBContext _dbContext;
