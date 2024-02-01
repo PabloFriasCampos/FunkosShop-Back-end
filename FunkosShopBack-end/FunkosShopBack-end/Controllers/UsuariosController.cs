@@ -1,6 +1,8 @@
+using FunkosShopBack_end.Resources;
 using FunkosShopBack_end.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+
 
 namespace FunkosShopBack_end.Controllers
 {
@@ -24,12 +26,13 @@ namespace FunkosShopBack_end.Controllers
         [HttpPost("signup")]
         public void RegistrarUsuario([FromBody] JsonElement datosUsuario)
         {
+
             _dbContext.RegistrarUsuario(new Usuario
             {
                 NombreUsuario = datosUsuario.GetProperty("NombreUsuario").GetString(),
                 Direccion = datosUsuario.GetProperty("Direccion").GetString(),
                 Correo = datosUsuario.GetProperty("Correo").GetString(),
-                Contrasena = datosUsuario.GetProperty("Contrasena").GetString(),
+                Contrasena = PasswordHelper.Hash(datosUsuario.GetProperty("Contrasena").GetString()),
                 Rol = "USUARIO",
             });
         }
@@ -37,8 +40,7 @@ namespace FunkosShopBack_end.Controllers
         [HttpPost("login")]
         public bool IniciarSesion([FromBody] JsonElement datosUsuario)
         {
-
-            return _dbContext.AutenticarUsuario(datosUsuario.GetProperty("NombreUsuario").GetString(), datosUsuario.GetProperty("Contrasena").GetString());
+            return _dbContext.AutenticarUsuario(datosUsuario.GetProperty("NombreUsuario").GetString(), PasswordHelper.Hash(datosUsuario.GetProperty("Contrasena").GetString()));
 
         }
 
