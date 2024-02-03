@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
+using FunkosShopBack_end.Models.DTOs;
 
 
 namespace FunkosShopBack_end.Controllers
@@ -33,36 +34,36 @@ namespace FunkosShopBack_end.Controllers
         }
 
         [HttpPost("signup")]
-        public void RegistrarUsuario([FromBody] JsonElement datosUsuario)
+        public void RegistrarUsuario([FromBody] UsuarioDTO usuarioDTO)
         {
 
             _dbContext.RegistrarUsuario(new Usuario
             {
-                NombreUsuario = datosUsuario.GetProperty("NombreUsuario").GetString(),
-                Direccion = datosUsuario.GetProperty("Direccion").GetString(),
-                Correo = datosUsuario.GetProperty("Correo").GetString(),
-                Contrasena = PasswordHelper.Hash(datosUsuario.GetProperty("Contrasena").GetString()),
+                NombreUsuario = usuarioDTO.NombreUsuario,
+                Direccion = usuarioDTO.Direccion,
+                Correo = usuarioDTO.Correo,
+                Contrasena = PasswordHelper.Hash(usuarioDTO.Contrasena),
                 Rol = "USUARIO",
             });
         }
 
         [HttpPost("login")]
-        public IActionResult IniciarSesion([FromBody] JsonElement datosUsuario)
+        public IActionResult IniciarSesion([FromBody] UsuarioDTO usuarioDTO)
         {
 
-            if(_dbContext.AutenticarUsuario(datosUsuario.GetProperty("NombreUsuario").GetString(), datosUsuario.GetProperty("Contrasena").GetString()))
+            if(_dbContext.AutenticarUsuario(usuarioDTO.NombreUsuario, PasswordHelper.Hash(usuarioDTO.Contrasena)))
             {
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    // Aqui se a�ade los datos para autorizar al usuario
+                    // Aqui se anade los datos para autorizar al usuario
                     Claims = new Dictionary<string, object>
                     {
                         { "id", Guid.NewGuid().ToString() },
                         { ClaimTypes.Role, "USUARIO" }
                     },
-                    // Aqu� indicamos cuando cu�ndo caduca el token
+                    // Aqui indicamos cuando cu�ndo caduca el token
                     Expires = DateTime.UtcNow.AddDays(30),
-                    // Aqu� especificamos nuestra clave y el algoritmo de firmado
+                    // Aqui especificamos nuestra clave y el algoritmo de firmado
                     SigningCredentials = new SigningCredentials(
                         _tokenParameters.IssuerSigningKey,
                         SecurityAlgorithms.HmacSha256Signature)
