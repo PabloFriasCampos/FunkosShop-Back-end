@@ -17,7 +17,7 @@ namespace FunkosShopBack_end.Controllers
     public class UsuariosController : ControllerBase
     {
         private DBContext _dbContext;
-        // Se obtiene por inyecci�n los par�metros preestablecidos para crear los token
+        // Se obtiene por inyecciom los parametros preestablecidos para crear los token
         private readonly TokenValidationParameters _tokenParameters;
 
         public UsuariosController(DBContext dbContext, IOptionsMonitor<JwtBearerOptions> jwtOptions)
@@ -50,8 +50,9 @@ namespace FunkosShopBack_end.Controllers
         [HttpPost("login")]
         public IActionResult IniciarSesion([FromBody] UsuarioDTO usuarioDTO)
         {
+            int usuarioId = _dbContext.AutenticarUsuario(usuarioDTO.Correo, PasswordHelper.Hash(usuarioDTO.Contrasena));
 
-            if(_dbContext.AutenticarUsuario(usuarioDTO.Correo, PasswordHelper.Hash(usuarioDTO.Contrasena)))
+            if(usuarioId != -1)
             {
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
@@ -73,6 +74,7 @@ namespace FunkosShopBack_end.Controllers
                 JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
                 SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
                 string stringToken = tokenHandler.WriteToken(token);
+                stringToken += ";" + usuarioId;
 
                 return Ok(stringToken);
             }

@@ -28,7 +28,7 @@ namespace FunkosShopBack_end.Controllers
             return _dbContext.ListaProductosCarrito;
         }*/
 
-        [HttpPost("{productoID}")]
+        [HttpPost("{productoID}/{carritoID}/{cantidadProducto}")]
         public void AgregaListaProductoCarrito(int productoID, int carritoID, int cantidadProducto)
         {
 

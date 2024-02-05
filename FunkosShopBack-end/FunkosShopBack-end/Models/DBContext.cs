@@ -40,9 +40,16 @@ namespace FunkosShopBack_end.Models
             SaveChanges();
         }
 
-        public bool AutenticarUsuario(string correo, string contrasena)
+        public int AutenticarUsuario(string correo, string contrasena)
         {
-            return Usuarios.Any(usuario => usuario.Correo == correo && usuario.Contrasena == contrasena);
+            Usuario usuario = Usuarios.First(usuario => usuario.Correo == correo && usuario.Contrasena == contrasena);
+
+            if(usuario != null)
+            {
+                return usuario.UsuarioId;
+            }
+
+            return -1;
         }
 
 
