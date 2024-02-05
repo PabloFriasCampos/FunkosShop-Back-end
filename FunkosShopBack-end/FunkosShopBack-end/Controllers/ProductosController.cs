@@ -34,7 +34,7 @@ namespace FunkosShopBack_end.Controllers
         {
             _dbContext.RegistrarProducto(new Producto
             {
-                NombreProducto = "Sora",
+                NombreProducto = "Ronaldo",
                 PrecioEUR = 3,
                 Descripcion = "Kingdom Hearts",
                 Categoria = "Anime",

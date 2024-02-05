@@ -8,9 +8,11 @@ namespace FunkosShopBack_end.Models
         private const string DATABASE_PATH = "funkos.db";
 
         public DbSet<Carrito> Carritos { get; set; }
+        public DbSet<ListaProductosCarrito> ListaProductosCarrito { get; set; }
+        public DbSet<ListaProductosPedido> ListaProductosPedido { get; set; }
+        public DbSet<Pedido> Pedidos { get; set; }
         public DbSet<Producto> Productos { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
-        public DbSet<Pedido> Pedidos { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
@@ -21,6 +23,13 @@ namespace FunkosShopBack_end.Models
         public void RegistrarUsuario(Usuario usuario)
         {
             Usuarios.Add(usuario);
+
+            Carrito carrito = new Carrito
+            {
+                Usuario = usuario
+            };
+            
+            Carritos.Add(carrito);
             SaveChanges();
         }
 
@@ -35,5 +44,12 @@ namespace FunkosShopBack_end.Models
             return Usuarios.Any(usuario => usuario.Correo == correo && usuario.Contrasena == contrasena);
         }
 
+
+        public void RegistraListaProductoCarrito(ListaProductosCarrito listaProductosCarrito)
+        {
+            ListaProductosCarrito.Add(listaProductosCarrito);
+            SaveChanges();
+        }
+        
     }
 }
