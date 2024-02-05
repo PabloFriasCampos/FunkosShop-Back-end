@@ -1,4 +1,5 @@
-﻿using FunkosShopBack_end.Models;
+using FunkosShopBack_end.Models.Entities;
+using FunkosShopBack_end.Models;
 using FunkosShopBack_end.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

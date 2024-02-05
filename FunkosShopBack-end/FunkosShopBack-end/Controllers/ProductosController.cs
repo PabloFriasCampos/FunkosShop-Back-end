@@ -17,9 +17,14 @@ namespace FunkosShopBack_end.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Producto> Get()
+        public IEnumerable<ListaProductosPorCategoria> Get()
         {
-            return _dbContext.Productos;
+            return _dbContext.Productos.GroupBy(p => p.Categoria)
+                .Select(g => new ListaProductosPorCategoria
+                {
+                    Categoria = g.Key,
+                    Productos = g.ToList()
+                });
         }
 
         [HttpGet("{id}")]
@@ -27,19 +32,6 @@ namespace FunkosShopBack_end.Controllers
         {
             Producto producto = _dbContext.Productos.Find(id);
             return producto == null ? NotFound() : producto;
-        }
-
-        [HttpPost]
-        public void CrearProducto([FromBody] JsonElement datosProductos)
-        {
-            _dbContext.RegistrarProducto(new Producto
-            {
-                NombreProducto = "Ronaldo",
-                PrecioEUR = 3,
-                Descripcion = "Kingdom Hearts",
-                Categoria = "Anime",
-                Stock = 4
-            });
         }
     }
 }
