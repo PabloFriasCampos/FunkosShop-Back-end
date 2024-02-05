@@ -1,7 +1,7 @@
-﻿using FunkosShopBack_end.Models;
+﻿using FunkosShopBack_end.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace FunkosShopBack_end
+namespace FunkosShopBack_end.Models
 {
     public class DBContext : DbContext
     {
@@ -30,9 +30,9 @@ namespace FunkosShopBack_end
             SaveChanges();
         }
 
-        public bool AutenticarUsuario(string nombreUsuario, string contrasena)
+        public bool AutenticarUsuario(string correo, string contrasena)
         {
-            return Usuarios.Any(usuario => usuario.NombreUsuario == nombreUsuario && usuario.Contrasena == contrasena);
+            return Usuarios.Any(usuario => usuario.Correo == correo && usuario.Contrasena == contrasena);
         }
 
     }

@@ -1,4 +1,4 @@
-﻿namespace FunkosShopBack_end.Models
+﻿namespace FunkosShopBack_end.Models.Entities
 {
     public class ListaProductosCarrito
     {

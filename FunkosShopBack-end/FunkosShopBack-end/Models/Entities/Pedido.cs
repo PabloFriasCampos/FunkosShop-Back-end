@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace FunkosShopBack_end.Models
+namespace FunkosShopBack_end.Models.Entities
 {
     public class Pedido
-    {   
+    {
         public int PedidoId { get; set; }
         public Usuario Usuario { get; set; }
         public DateTime FechaPedido { get; set; }

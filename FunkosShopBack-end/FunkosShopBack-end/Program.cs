@@ -1,4 +1,5 @@
 
+using FunkosShopBack_end.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -6,8 +7,12 @@ namespace FunkosShopBack_end
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
+
+            // Configuramos para que el directorio de trabajo sea donde está el ejecutable
+            Directory.SetCurrentDirectory(AppContext.BaseDirectory);
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -16,9 +21,11 @@ namespace FunkosShopBack_end
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddScoped<DBContext>();
 
-            if(builder.Environment.IsDevelopment())
+            builder.Services.AddScoped<DBContext>();
+            builder.Services.AddTransient<DBSeeder>();
+
+            if (builder.Environment.IsDevelopment())
             {
                 builder.Services.AddCors(options =>
                 {
@@ -49,10 +56,17 @@ namespace FunkosShopBack_end
 
             var app = builder.Build();
 
-            using (IServiceScope scope = app.Services.CreateScope())
+            /*using (IServiceScope scope = app.Services.CreateScope())
             {
                 DBContext dbContext = scope.ServiceProvider.GetService<DBContext>();
                 dbContext.Database.EnsureCreated();
+            }*/
+
+            // Si no está creada la base de datos y la creamos y rellenamos 
+            using (IServiceScope scope = app.Services.CreateScope())
+            {
+                DBSeeder dbSeeder = scope.ServiceProvider.GetService<DBSeeder>();
+                await dbSeeder.SeedAsync();
             }
 
             // Configure the HTTP request pipeline.
@@ -71,6 +85,8 @@ namespace FunkosShopBack_end
             // Habilita la autorización
             app.UseAuthorization();
 
+            // Habilitamos el uso de archivos estáticos
+            app.UseStaticFiles();
 
             app.MapControllers();
 

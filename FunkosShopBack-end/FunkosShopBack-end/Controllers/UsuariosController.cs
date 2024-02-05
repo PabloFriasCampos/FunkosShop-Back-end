@@ -1,13 +1,13 @@
 using FunkosShopBack_end.Resources;
-using FunkosShopBack_end.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text.Json;
 using FunkosShopBack_end.Models.DTOs;
+using FunkosShopBack_end.Models.Entities;
+using FunkosShopBack_end.Models;
 
 
 namespace FunkosShopBack_end.Controllers
@@ -51,7 +51,7 @@ namespace FunkosShopBack_end.Controllers
         public IActionResult IniciarSesion([FromBody] UsuarioDTO usuarioDTO)
         {
 
-            if(_dbContext.AutenticarUsuario(usuarioDTO.NombreUsuario, PasswordHelper.Hash(usuarioDTO.Contrasena)))
+            if(_dbContext.AutenticarUsuario(usuarioDTO.Correo, PasswordHelper.Hash(usuarioDTO.Contrasena)))
             {
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
