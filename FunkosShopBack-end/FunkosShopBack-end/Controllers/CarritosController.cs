@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace FunkosShopBack_end.Controllers
 {
@@ -24,56 +25,15 @@ namespace FunkosShopBack_end.Controllers
             return carrito == null ? NotFound() : carrito;
         }
 
-      /*  [HttpPost("{idUser}")]
-        public ActionResult<Carrito> CreaCarrito(int idUser)
+        [HttpGet]
+        public IEnumerable<Carrito> TodosCarritos()
         {
-            Carrito carrito = new Carrito();
-
-            carrito.Usuario = _dbContext.Usuarios.Where(p => p.UsuarioId == idUser).First();
-
-            carrito.TotalCarritoEUR = 15;
-
-            _dbContext.Carritos.Add(carrito);
-            
-            _dbContext.SaveChanges();
-            return carrito == null ? NotFound() : carrito;
+            return _dbContext.Carritos;
         }
-      */
-        /*
-
-        [HttpGet("{id}")]
-        public ActionResult<ListaProductosCarrito> DetalleListaProductoCarrito(int id)
-        {
-            ListaProductosCarrito lista = _dbContext.ListaProductosCarrito.Find(id);
-            return lista == null ? NotFound() : lista;
-        }*/
 
 
-
-        [HttpPost("{productoID}")]
-        public ActionResult<ListaProductosCarrito> AgregaListaProductoCarrito(int productoID, int carritoID, int cantidadProducto)
-        {
-            
-            var carrito = _dbContext.Carritos.Find(carritoID);
-
-            var productoToAgregar = _dbContext.Productos.Find(productoID);
-
-            ListaProductosCarrito listaProductosCarrito = new ListaProductosCarrito();
-
-            listaProductosCarrito.Carrito = carrito;
-
-            listaProductosCarrito.Producto = productoToAgregar;
-
-            listaProductosCarrito.CantidadProducto = 5;
-
-            listaProductosCarrito.TotalProductoEUR = 10;
-
-            _dbContext.ListaProductosCarrito.Add(listaProductosCarrito);
-
-            _dbContext.SaveChanges();
-
-            return listaProductosCarrito == null ? NotFound() : listaProductosCarrito;
-        }
+       
+        
 
         /*
         [HttpPost("agregaralcarrito")]
@@ -122,7 +82,7 @@ namespace FunkosShopBack_end.Controllers
             {
                 return StatusCode(500, $"Error interno del servidor: {ex.Message}");
             }*/
-        
+
 
     }
 }

@@ -44,6 +44,12 @@ namespace FunkosShopBack_end
             return Usuarios.Any(usuario => usuario.NombreUsuario == nombreUsuario && usuario.Contrasena == contrasena);
         }
 
+
+        public void RegistraListaProductoCarrito(ListaProductosCarrito listaProductosCarrito)
+        {
+            ListaProductosCarrito.Add(listaProductosCarrito);
+            SaveChanges();
+        }
         
     }
 }
