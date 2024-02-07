@@ -1,6 +1,7 @@
 ﻿using FunkosShopBack_end.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Linq;
 
 namespace FunkosShopBack_end.Models
 {
@@ -62,17 +63,17 @@ namespace FunkosShopBack_end.Models
         public void modificarCantidad(int productoID, int carritoID, int cantidad)
         {
             var listaProducto = ListaProductosCarrito.First(p => p.Producto.ProductoId == productoID && p.Carrito.CarritoID == carritoID);
-
-            if (listaProducto.CantidadProducto>1)
-            {   
-                listaProducto.CantidadProducto += cantidad;
-                listaProducto.TotalProductoEUR = listaProducto.CantidadProducto * listaProducto.Producto.PrecioEUR;
+            listaProducto.CantidadProducto += cantidad;
+            
+            if (listaProducto.CantidadProducto==0)
+            {
+                ListaProductosCarrito.Remove(listaProducto);
             }
             else
             {
-             //   bool borrado = from ListaProductosCarrito in 
+                listaProducto.TotalProductoEUR = listaProducto.CantidadProducto * listaProducto.Producto.PrecioEUR;
             }
-
+            
             SaveChanges();
         }
 
