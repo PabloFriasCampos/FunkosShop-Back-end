@@ -70,7 +70,7 @@ namespace FunkosShopBack_end.Models
             }
             else
             {
-                bool borrado = from ListaProductosCarrito in 
+             //   bool borrado = from ListaProductosCarrito in 
             }
 
             SaveChanges();
