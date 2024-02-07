@@ -21,9 +21,9 @@ namespace FunkosShopBack_end.Controllers
         }
 
         [HttpGet("{idCarrito}")]   
-        public ActionResult<Carrito> DetalleCarrito(int id)
+        public ActionResult<Carrito> DetalleCarrito(int idCarrito)
         {
-            Carrito carrito = _dbContext.Carritos.Find(id);
+            Carrito carrito = _dbContext.Carritos.Find(idCarrito);
             return carrito == null ? NotFound() : carrito;
         }
 

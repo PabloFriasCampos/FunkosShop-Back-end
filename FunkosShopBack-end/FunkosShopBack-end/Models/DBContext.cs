@@ -63,8 +63,15 @@ namespace FunkosShopBack_end.Models
         {
             var listaProducto = ListaProductosCarrito.First(p => p.Producto.ProductoId == productoID && p.Carrito.CarritoID == carritoID);
 
-            listaProducto.CantidadProducto += cantidad;
-            listaProducto.TotalProductoEUR = listaProducto.CantidadProducto * listaProducto.Producto.PrecioEUR;
+            if (listaProducto.CantidadProducto>1)
+            {   
+                listaProducto.CantidadProducto += cantidad;
+                listaProducto.TotalProductoEUR = listaProducto.CantidadProducto * listaProducto.Producto.PrecioEUR;
+            }
+            else
+            {
+                bool borrado = from ListaProductosCarrito in 
+            }
 
             SaveChanges();
         }
