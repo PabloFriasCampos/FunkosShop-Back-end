@@ -1,7 +1,6 @@
 ﻿using FunkosShopBack_end.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Linq;
 
 namespace FunkosShopBack_end.Models
 {
@@ -10,8 +9,8 @@ namespace FunkosShopBack_end.Models
         private const string DATABASE_PATH = "funkos.db";
 
         public DbSet<Carrito> Carritos { get; set; }
-        public DbSet<ListaProductosCarrito> ListaProductosCarrito { get; set; }
-        public DbSet<ListaProductosPedido> ListaProductosPedido { get; set; }
+        public DbSet<ProductoCarrito> ListaProductosCarrito { get; set; }
+        public DbSet<ProductoPedido> ListaProductosPedido { get; set; }
         public DbSet<Pedido> Pedidos { get; set; }
         public DbSet<Producto> Productos { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
@@ -24,13 +23,9 @@ namespace FunkosShopBack_end.Models
 
         public void RegistrarUsuario(Usuario usuario)
         {
+            Carrito carrito = new Carrito();
+            carrito.Usuario = usuario;
             Usuarios.Add(usuario);
-
-            Carrito carrito = new Carrito
-            {
-                Usuario = usuario
-            };
-            
             Carritos.Add(carrito);
             SaveChanges();
         }
@@ -47,22 +42,21 @@ namespace FunkosShopBack_end.Models
 
             if(usuario != null)
             {
-                return usuario.UsuarioId;
+                return usuario.UsuarioID;
             }
 
             return -1;
         }
 
-
-        public void RegistraListaProductoCarrito(ListaProductosCarrito listaProductosCarrito)
+        public void RegistraListaProductoCarrito(ProductoCarrito productoCarrito)
         {
-            ListaProductosCarrito.Add(listaProductosCarrito);
+            ListaProductosCarrito.Add(productoCarrito);
             SaveChanges();
         }
 
         public void modificarCantidad(int productoID, int carritoID, int cantidad)
         {
-            var listaProducto = ListaProductosCarrito.First(p => p.Producto.ProductoId == productoID && p.Carrito.CarritoID == carritoID);
+            var listaProducto = ListaProductosCarrito.First(p => p.Producto.ProductoID == productoID && p.Carrito.CarritoID == carritoID);
             listaProducto.CantidadProducto += cantidad;
             
             if (listaProducto.CantidadProducto==0)
@@ -77,9 +71,9 @@ namespace FunkosShopBack_end.Models
             SaveChanges();
         }
 
-        public bool compruebaExiste(int productoID, int carritoID)
+        public bool productoYaEnCarrito(int productoID, int carritoID)
         {
-            var listaExiste = ListaProductosCarrito.Where(p => p.Producto.ProductoId == productoID && p.Carrito.CarritoID == carritoID).ToList();
+            var listaExiste = ListaProductosCarrito.Where(p => p.Producto.ProductoID == productoID && p.Carrito.CarritoID == carritoID).ToList();
 
             return listaExiste.IsNullOrEmpty();
         }

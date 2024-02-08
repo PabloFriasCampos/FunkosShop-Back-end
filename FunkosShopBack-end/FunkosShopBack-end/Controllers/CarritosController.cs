@@ -1,10 +1,8 @@
 using FunkosShopBack_end.Models.Entities;
 using FunkosShopBack_end.Models;
-using FunkosShopBack_end.Models.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
+using FunkosShopBack_end.Models.DTOs;
 
 namespace FunkosShopBack_end.Controllers
 {
@@ -21,70 +19,18 @@ namespace FunkosShopBack_end.Controllers
         }
 
         [HttpGet("{idCarrito}")]   
-        public ActionResult<Carrito> DetalleCarrito(int idCarrito)
+        public async Task<CarritoDTO> DetalleCarritoAsync(int idCarrito)
         {
-            Carrito carrito = _dbContext.Carritos.Find(idCarrito);
-            return carrito == null ? NotFound() : carrito;
-        }
+            Carrito carrito = await _dbContext.Carritos.Include(carrito => carrito.ListaProductosCarrito).ThenInclude(listaProductos => listaProductos.Producto)
+                .FirstOrDefaultAsync(carrito => carrito.CarritoID == idCarrito);
 
-        [HttpGet]
-        public IEnumerable<Carrito> TodosCarritos()
-        {
-            return _dbContext.Carritos;
-        }
-
-
-       
-        
-
-        /*
-        [HttpPost("agregaralcarrito")]
-        public async Task<IActionResult> AgregarAlCarrito(int carritoId, int productoId, int cantidadProducto)
-        {
-            try
+            CarritoDTO carritoDTO = new CarritoDTO
             {
-                // Verificar si el carrito existe
-                var carrito = await _dbContext.Carritos
-                    .Include(c => c.Productos)
-                    .FirstOrDefaultAsync(c => c.CarritoID == carritoId);
+                TotalCarritoEUR = carrito.TotalCarritoEUR,
+                ListaProductosCarrito = carrito.ListaProductosCarrito
+            };
 
-                if (carrito == null)
-                {
-                    return BadRequest("Carrito no encontrado");
-                }
-
-                // Verificar si el producto existe
-                var producto = await _dbContext.Productos
-                    .FirstOrDefaultAsync(p => p.ProductoId == productoId);
-
-                if (producto == null)
-                {
-                    return BadRequest("Producto no encontrado");
-                }
-
-                // Crear un nuevo objeto ListaProductoCarrito
-                var listaProductoCarrito = new ListaProductosCarrito
-                {
-                    Carrito = carrito,
-                    Producto = producto,
-                    CantidadProducto = cantidadProducto,
-                    TotalProductoEUR = cantidadProducto * producto.PrecioEUR
-                };
-
-                // Actualizar el total del carrito
-                carrito.TotalCarritoEUR += listaProductoCarrito.TotalProductoEUR;
-
-                // Agregar el objeto ListaProductoCarrito al contexto y guardar los cambios en la base de datos
-                _dbContext.ListaProductosCarrito.Add(listaProductoCarrito);
-                await _dbContext.SaveChangesAsync();
-
-                return Ok("Producto agregado al carrito exitosamente");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
-            }*/
-
-
+            return carritoDTO;
+        }
     }
 }

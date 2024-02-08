@@ -1,7 +1,6 @@
 ﻿using FunkosShopBack_end.Models;
 using FunkosShopBack_end.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 
 namespace FunkosShopBack_end.Controllers
 {

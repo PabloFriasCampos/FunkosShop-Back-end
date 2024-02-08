@@ -6,11 +6,13 @@ namespace FunkosShopBack_end.Models.Entities
     [Index(nameof(NombreUsuario), IsUnique = true)]
     public class Usuario
     {
-        public int UsuarioId { get; set; }
+        public int UsuarioID { get; set; }
         public string NombreUsuario { get; set; }
         public string Direccion { get; set; }
         public string Correo { get; set; }
         public string Contrasena { get; set; }
         public string Rol { get; set; }
+
+        public ICollection<Pedido> Pedidos { get; set; }
     }
 }
