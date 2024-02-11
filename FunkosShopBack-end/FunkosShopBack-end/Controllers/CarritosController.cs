@@ -24,9 +24,16 @@ namespace FunkosShopBack_end.Controllers
             Carrito carrito = await _dbContext.Carritos.Include(carrito => carrito.ListaProductosCarrito).ThenInclude(listaProductos => listaProductos.Producto)
                 .FirstOrDefaultAsync(carrito => carrito.CarritoID == idCarrito);
 
+            double totalCarrito = 0;
+
+            foreach(ProductoCarrito producto in carrito.ListaProductosCarrito)
+            {
+                totalCarrito += producto.TotalProductoEUR;
+            }
+
             CarritoDTO carritoDTO = new CarritoDTO
             {
-                TotalCarritoEUR = carrito.TotalCarritoEUR,
+                TotalCarritoEUR = totalCarrito,
                 ListaProductosCarrito = carrito.ListaProductosCarrito
             };
 
