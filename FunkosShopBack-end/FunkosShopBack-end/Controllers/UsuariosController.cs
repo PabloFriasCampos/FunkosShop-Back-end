@@ -28,10 +28,10 @@ namespace FunkosShopBack_end.Controllers
         }
 
         [HttpPost("signup")]
-        public void RegistrarUsuario([FromBody] UsuarioDTO usuarioDTO)
+        public IActionResult RegistrarUsuario([FromBody] UsuarioDTO usuarioDTO)
         {
 
-            _dbContext.RegistrarUsuario(new Usuario
+            bool resultado = _dbContext.RegistrarUsuario(new Usuario
             {
                 NombreUsuario = usuarioDTO.NombreUsuario,
                 Direccion = usuarioDTO.Direccion,
@@ -39,6 +39,14 @@ namespace FunkosShopBack_end.Controllers
                 Contrasena = PasswordHelper.Hash(usuarioDTO.Contrasena),
                 Rol = "USUARIO",
             });
+            if(resultado == true)
+            {
+                return Ok(resultado);
+            }
+            else
+            {
+                return BadRequest(resultado);
+            }
         }
 
         [HttpPost("login")]
@@ -74,7 +82,7 @@ namespace FunkosShopBack_end.Controllers
             }
 
             // Si el usuario no existe, lo indicamos
-            return Unauthorized("Este usuario no existe");
+            return Unauthorized();
 
         }
 

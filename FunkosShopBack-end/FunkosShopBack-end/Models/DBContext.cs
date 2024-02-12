@@ -21,13 +21,21 @@ namespace FunkosShopBack_end.Models
             options.UseSqlite($"DataSource={baseDir}{DATABASE_PATH}");
         }
 
-        public void RegistrarUsuario(Usuario usuario)
+        public bool RegistrarUsuario(Usuario usuario)
         {
+            bool guardado = false;
             Carrito carrito = new Carrito();
             carrito.Usuario = usuario;
-            Usuarios.Add(usuario);
-            Carritos.Add(carrito);
-            SaveChanges();
+            if(Usuarios.FirstOrDefault(usuarioin => usuarioin.Correo == usuario.Correo 
+            || usuarioin.NombreUsuario == usuario.NombreUsuario) == null)
+            {
+                Usuarios.Add(usuario);
+                Carritos.Add(carrito);
+                SaveChanges();
+                guardado = true;
+            }
+
+            return guardado;
         }
 
         public void RegistrarProducto(Producto producto)
@@ -38,7 +46,7 @@ namespace FunkosShopBack_end.Models
 
         public int AutenticarUsuario(string correo, string contrasena)
         {
-            Usuario usuario = Usuarios.First(usuario => usuario.Correo == correo && usuario.Contrasena == contrasena);
+            Usuario usuario = Usuarios.FirstOrDefault(usuario => usuario.Correo == correo && usuario.Contrasena == contrasena);
 
             if(usuario != null)
             {
