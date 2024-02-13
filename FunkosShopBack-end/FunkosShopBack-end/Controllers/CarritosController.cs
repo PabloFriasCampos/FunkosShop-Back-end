@@ -39,5 +39,21 @@ namespace FunkosShopBack_end.Controllers
 
             return carritoDTO;
         }
+
+        [HttpGet("total/{idCarrito}")]
+        public async Task<int> TotalProductosCarrito(int idCarrito)
+        {
+            Carrito carrito = await _dbContext.Carritos.Include(carrito => carrito.ListaProductosCarrito).ThenInclude(listaProductos => listaProductos.Producto)
+                .FirstOrDefaultAsync(carrito => carrito.CarritoID == idCarrito);
+
+            int totalCarrito = 0;
+
+            foreach (ProductoCarrito producto in carrito.ListaProductosCarrito)
+            {
+                totalCarrito += producto.CantidadProducto;
+            }
+
+            return totalCarrito;
+        }
     }
 }
