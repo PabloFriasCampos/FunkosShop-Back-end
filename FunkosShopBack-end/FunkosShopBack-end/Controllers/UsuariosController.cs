@@ -39,14 +39,8 @@ namespace FunkosShopBack_end.Controllers
                 Contrasena = PasswordHelper.Hash(usuarioDTO.Contrasena),
                 Rol = "USUARIO",
             });
-            if(resultado == true)
-            {
-                return Ok(resultado);
-            }
-            else
-            {
-                return BadRequest(resultado);
-            }
+            return resultado ? Ok(resultado) : BadRequest(resultado);
+            
         }
 
         [HttpPost("login")]
