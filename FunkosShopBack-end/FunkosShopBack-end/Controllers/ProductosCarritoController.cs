@@ -31,7 +31,7 @@ namespace FunkosShopBack_end.Controllers
                     CarritoID = carrito.CarritoID,
                     ProductoID = productoToAgregar.ProductoID,
                     CantidadProducto = cantidadProducto,
-                    TotalProductoEUR = cantidadProducto * productoToAgregar.PrecioEUR
+                    TotalProductoEUR = (double)(cantidadProducto * productoToAgregar.PrecioEUR)
                 };
 
                 _dbContext.RegistraListaProductoCarrito(productoCarrito);

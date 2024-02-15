@@ -73,7 +73,7 @@ namespace FunkosShopBack_end.Models
             }
             else
             {
-                listaProducto.TotalProductoEUR = listaProducto.CantidadProducto * listaProducto.Producto.PrecioEUR;
+                listaProducto.TotalProductoEUR = (double)(listaProducto.CantidadProducto * listaProducto.Producto.PrecioEUR);
             }
             
             SaveChanges();
