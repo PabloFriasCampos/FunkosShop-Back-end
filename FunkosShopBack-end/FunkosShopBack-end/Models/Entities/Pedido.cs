@@ -7,9 +7,10 @@
         public DateTime FechaPedido { get; set; }
         public double TotalPedidoEUR { get; set; }
         public double TotalPedidoETH { get; set; }
-        public bool Pagado { get; set; }
-        public string HashTransaccion { get; set; }
+        public string Value { get; set; } 
         public string WalletCliente { get; set; }
+        public string HashTransaccion { get; set; }
+        public bool Pagado { get; set; }
 
 
         public Usuario Usuario { get; set; }
