@@ -1,6 +1,7 @@
 ﻿using FunkosShopBack_end.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Recursos;
 
 namespace FunkosShopBack_end.Models
 {
@@ -82,7 +83,7 @@ namespace FunkosShopBack_end.Models
         public bool productoYaEnCarrito(int productoID, int carritoID)
         {
             var listaExiste = ListaProductosCarrito.Where(p => p.Producto.ProductoID == productoID && p.Carrito.CarritoID == carritoID).ToList();
-
+            
             return listaExiste.IsNullOrEmpty();
         }
 
