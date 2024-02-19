@@ -10,6 +10,8 @@ using Nethereum.RPC.TransactionReceipts;
 using Nethereum.Web3;
 using System.Numerics;
 using System.Globalization;
+using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace FunkosShopBack_end.Controllers
 {
@@ -17,7 +19,7 @@ namespace FunkosShopBack_end.Controllers
     [Route("api/[controller]")]
     public class PedidoCriptoController : ControllerBase
     {
-        private const string OUR_WALLET = "0x0CE95990BC147F0E3037b5d1A08aA876C6410710";
+        private const string OUR_WALLET = "0xb8F1Df8CA072627E02a10879f422bA512C485d0d";
         private const string NETWORK_URL = "https://rpc.sepolia.org";
 
         private readonly DBContext _dbContext;
@@ -27,39 +29,51 @@ namespace FunkosShopBack_end.Controllers
             _dbContext = dbContext;
         }
 
-        [HttpGet("productos")]
-        public IEnumerable<Producto> Get()
+        [HttpGet]
+        public IEnumerable<Pedido> GetPedidos()
         {
-            return _dbContext.Productos;
+            return _dbContext.Pedidos;
         }
 
-        [HttpPost("buy/{ProductoID}")]
-        public async Task<TransactionToSing> BuyAsync(int ProductoID, [FromBody] string clientWallet)
+        [HttpPost("buy")]
+        public async Task<TransactionToSing> BuyAsync([FromBody] JsonElement body)
         {
-            Producto producto = _dbContext.Productos.Find(ProductoID);
+            ProductoPedido[] productosPedido = JsonConvert.DeserializeObject<ProductoPedido[]>(body.GetProperty("productos").GetRawText());
+            decimal totalPedido = 0;
+            foreach (ProductoPedido producto in productosPedido)
+            {
+                producto.PedidoID = _dbContext.Pedidos.Count()+1;
+                totalPedido += producto.TotalProductoEUR;
+            }
+            string cuentaMetaMask = body.GetProperty("cuentaMetaMask").GetString();
             using CoinGeckoApi coinGeckoApi = new CoinGeckoApi();
             decimal ethereumEur = await coinGeckoApi.GetEthereumPriceAsync();
-            BigInteger priceWei = Web3.Convert.ToWei(producto.PrecioEUR / ethereumEur); // Wei
+            BigInteger priceWei = Web3.Convert.ToWei(totalPedido / ethereumEur); // Wei
 
             Web3 web3 = new Web3(NETWORK_URL);
 
             TransactionToSing transactionToSing = new TransactionToSing()
             {
-                From = clientWallet,
+                From = cuentaMetaMask,
                 To = OUR_WALLET,
+                Id = _dbContext.Pedidos.Count()+1,
                 Value = new HexBigInteger(priceWei).HexValue,
-                Gas = new HexBigInteger(30000).HexValue, // Velocidad en en la que se hace la transacción
+                Gas = new HexBigInteger(300000).HexValue, // Velocidad en en la que se hace la transacción
                 GasPrice = (await web3.Eth.GasPrice.SendRequestAsync()).HexValue
             };
 
             Pedido pedido = new Pedido()
             {
-                PedidoID = _dbContext.Pedidos.Count(),
+                UsuarioID = 1,
+                FechaPedido = DateTime.Now,
+                TotalPedidoEUR = totalPedido,
+                //TotalPedidoETH = priceWei,
                 WalletCliente = transactionToSing.From,
                 Value = transactionToSing.Value
             };
 
             _dbContext.Pedidos.Add(pedido);
+            _dbContext.SaveChanges();
             transactionToSing.Id = pedido.PedidoID;
 
             return transactionToSing;
@@ -78,11 +92,12 @@ namespace FunkosShopBack_end.Controllers
 
             try
             {
-                // Obtener los datos de la transacción
-                var transactionEth = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(txHash);
 
                 // Esperar a que la transacción se confirme en la cadena de bloques
                 var transactionReceipt = await receiptPollingService.PollForReceiptAsync(txHash);
+
+                // Obtener los datos de la transacción
+                var transactionEth = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(txHash);
 
                 Console.WriteLine(transactionEth.TransactionHash == transactionReceipt.TransactionHash);
                 Console.WriteLine(transactionReceipt.Status.Value == 1);

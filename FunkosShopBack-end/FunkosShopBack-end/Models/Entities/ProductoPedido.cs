@@ -6,7 +6,7 @@
         public int ProductoID { get; set; }
         public int PedidoID { get; set; }
         public int CantidadProducto { get; set; }
-        public double TotalProductoEUR { get; set; }
+        public decimal TotalProductoEUR { get; set; }
 
         public Producto Producto { get; set; }
         public Pedido Pedido { get; set; }

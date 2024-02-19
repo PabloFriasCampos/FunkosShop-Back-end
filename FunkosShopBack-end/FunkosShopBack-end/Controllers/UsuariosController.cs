@@ -28,6 +28,19 @@ namespace FunkosShopBack_end.Controllers
                 .TokenValidationParameters;
         }
 
+        [HttpGet("{id}")]
+        public UsuarioDTO Get(int id)
+        {
+            Usuario usuario = _dbContext.Usuarios.Find(id);
+            UsuarioDTO usuarioDTO = new UsuarioDTO
+            {
+                NombreUsuario = usuario.NombreUsuario,
+                Direccion = usuario.Direccion,
+                Correo = usuario.Correo
+            };
+            return usuarioDTO;
+        }
+
         [HttpPost("signup")]
         public IActionResult RegistrarUsuario([FromBody] UsuarioDTO usuarioDTO)
         {

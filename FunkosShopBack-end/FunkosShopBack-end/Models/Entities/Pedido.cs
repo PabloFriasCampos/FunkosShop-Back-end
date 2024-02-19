@@ -5,11 +5,11 @@
         public int PedidoID { get; set; }
         public int UsuarioID { get; set; }
         public DateTime FechaPedido { get; set; }
-        public double TotalPedidoEUR { get; set; }
-        public double TotalPedidoETH { get; set; }
+        public decimal TotalPedidoEUR { get; set; }
+        public decimal TotalPedidoETH { get; set; }
         public string Value { get; set; } 
         public string WalletCliente { get; set; }
-        public string HashTransaccion { get; set; }
+        public string? HashTransaccion { get; set; }
         public bool Pagado { get; set; }
 
 
