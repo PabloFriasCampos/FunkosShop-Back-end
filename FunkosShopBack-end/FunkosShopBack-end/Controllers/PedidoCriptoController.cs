@@ -12,6 +12,7 @@ using System.Numerics;
 using System.Globalization;
 using System.Text.Json;
 using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace FunkosShopBack_end.Controllers
 {
@@ -32,20 +33,24 @@ namespace FunkosShopBack_end.Controllers
         [HttpGet]
         public IEnumerable<Pedido> GetPedidos()
         {
-            return _dbContext.Pedidos;
+            return _dbContext.Pedidos.Include(pedido => pedido.ListaProductosPedido).ThenInclude(producto => producto.Producto);
         }
 
         [HttpPost("buy")]
         public async Task<TransactionToSing> BuyAsync([FromBody] JsonElement body)
         {
-            ProductoPedido[] productosPedido = JsonConvert.DeserializeObject<ProductoPedido[]>(body.GetProperty("productos").GetRawText());
+            ICollection<ProductoPedido> productosPedido = JsonConvert.DeserializeObject<ICollection<ProductoPedido>>(body.GetProperty("productos").GetRawText());
             decimal totalPedido = 0;
             foreach (ProductoPedido producto in productosPedido)
             {
-                producto.PedidoID = _dbContext.Pedidos.Count()+1;
+                if (producto.Producto.Stock < producto.CantidadProducto)
+                {
+                    throw new Exception("No hay stock suficiente para el producto " + producto.Producto.NombreProducto);
+                }
                 totalPedido += producto.TotalProductoEUR;
             }
             string cuentaMetaMask = body.GetProperty("cuentaMetaMask").GetString();
+            int id = int.Parse(body.GetProperty("id").GetString());
             using CoinGeckoApi coinGeckoApi = new CoinGeckoApi();
             decimal ethereumEur = await coinGeckoApi.GetEthereumPriceAsync();
             BigInteger priceWei = Web3.Convert.ToWei(totalPedido / ethereumEur); // Wei
@@ -64,9 +69,9 @@ namespace FunkosShopBack_end.Controllers
 
             Pedido pedido = new Pedido()
             {
-                UsuarioID = 1,
+                PedidoID = _dbContext.Pedidos.Count() + 1,
+                UsuarioID = id,
                 FechaPedido = DateTime.Now,
-                TotalPedidoEUR = totalPedido,
                 //TotalPedidoETH = priceWei,
                 WalletCliente = transactionToSing.From,
                 Value = transactionToSing.Value
@@ -74,16 +79,27 @@ namespace FunkosShopBack_end.Controllers
 
             _dbContext.Pedidos.Add(pedido);
             _dbContext.SaveChanges();
+            foreach (ProductoPedido producto in productosPedido)
+            {
+                producto.PedidoID = pedido.PedidoID;
+                pedido.ListaProductosPedido.Add(producto);
+                totalPedido += producto.TotalProductoEUR;
+            }
+            _dbContext.SaveChanges();
+            pedido.TotalPedidoEUR = totalPedido;
+
             transactionToSing.Id = pedido.PedidoID;
 
             return transactionToSing;
         }
 
         [HttpPost("check/{PedidoID}")]
-        public async Task<bool> CheckTransactionAsync(int pedidoID, [FromBody] String txHash)
+        public async Task<bool> CheckTransactionAsync(int pedidoID, [FromBody] JsonElement body)
         {
             bool success = false;
             Pedido pedido = _dbContext.Pedidos.Find(pedidoID);
+            string txHash = body.GetProperty("txHash").GetString();
+            int id = int.Parse(body.GetProperty("id").GetString());
             pedido.HashTransaccion = txHash;
 
             Web3 web3 = new Web3(NETWORK_URL);
@@ -109,7 +125,7 @@ namespace FunkosShopBack_end.Controllers
                     && transactionReceipt.Status.Value == 1 // Transacción realizada con éxito
                     && transactionReceipt.TransactionHash == pedido.HashTransaccion // El hash es el mismo
                     && transactionReceipt.From == pedido.WalletCliente // El dinero viene del cliente
-                    && transactionReceipt.To == OUR_WALLET; // El dinero se ingresa en nuestra cuenta
+                    && transactionReceipt.To.Equals(OUR_WALLET, StringComparison.OrdinalIgnoreCase); // El dinero se ingresa en nuestra cuenta
             }
             catch (Exception ex)
             {
@@ -117,6 +133,21 @@ namespace FunkosShopBack_end.Controllers
             }
 
             pedido.Pagado = success;
+
+            if (success)
+            {
+                Carrito carrito = _dbContext.Carritos.Find(id);
+
+                foreach(ProductoCarrito producto in carrito.ListaProductosCarrito)
+                {
+                    producto.Producto.Stock -= producto.CantidadProducto;
+                }
+
+                carrito.ListaProductosCarrito = [];
+                carrito.TotalCarritoEUR = 0;
+
+                _dbContext.SaveChanges();
+            }
 
             return success;
         }

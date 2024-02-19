@@ -14,7 +14,7 @@
 
 
         public Usuario Usuario { get; set; }
-        public ICollection<ProductoPedido> ListaProductosPedido { get; set; }
+        public ICollection<ProductoPedido> ListaProductosPedido { get; set; } = [];
 
     }
 }
