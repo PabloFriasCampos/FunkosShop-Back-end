@@ -36,6 +36,13 @@ namespace FunkosShopBack_end.Controllers
             return _dbContext.Pedidos.Include(pedido => pedido.ListaProductosPedido).ThenInclude(producto => producto.Producto);
         }
 
+        [HttpGet("ETH")]
+        public async Task<decimal> GetETHAsync()
+        {
+            using CoinGeckoApi coinGeckoApi = new CoinGeckoApi();
+            return await coinGeckoApi.GetEthereumPriceAsync();
+        }
+
         [HttpPost("buy")]
         public async Task<TransactionToSing> BuyAsync([FromBody] JsonElement body)
         {
@@ -72,7 +79,8 @@ namespace FunkosShopBack_end.Controllers
                 PedidoID = _dbContext.Pedidos.Count() + 1,
                 UsuarioID = id,
                 FechaPedido = DateTime.Now,
-                //TotalPedidoETH = priceWei,
+                TotalPedidoEUR = totalPedido,
+                TotalPedidoETH = totalPedido/ethereumEur,
                 WalletCliente = transactionToSing.From,
                 Value = transactionToSing.Value
             };
@@ -97,9 +105,15 @@ namespace FunkosShopBack_end.Controllers
         public async Task<bool> CheckTransactionAsync(int pedidoID, [FromBody] JsonElement body)
         {
             bool success = false;
-            Pedido pedido = _dbContext.Pedidos.Find(pedidoID);
+            Pedido pedido = _dbContext.Pedidos
+                                .Include(p => p.ListaProductosPedido)
+                                    .ThenInclude(p => p.Producto)
+                                .First(p => p.PedidoID == pedidoID);
+
+
             string txHash = body.GetProperty("txHash").GetString();
             int id = int.Parse(body.GetProperty("id").GetString());
+            bool carritoLocal = body.GetProperty("carritoLocal").GetBoolean();
             pedido.HashTransaccion = txHash;
 
             Web3 web3 = new Web3(NETWORK_URL);
@@ -134,11 +148,15 @@ namespace FunkosShopBack_end.Controllers
 
             pedido.Pagado = success;
 
-            if (success)
+            if (success && !carritoLocal)
             {
-                Carrito carrito = _dbContext.Carritos.Find(id);
+                Carrito carrito = _dbContext.Carritos
+                    .Include(c => c.ListaProductosCarrito)
+                        .ThenInclude(p => p.Producto)
+                    .First(c => c.CarritoID == id);
 
-                foreach(ProductoCarrito producto in carrito.ListaProductosCarrito)
+
+                foreach (ProductoCarrito producto in carrito.ListaProductosCarrito)
                 {
                     producto.Producto.Stock -= producto.CantidadProducto;
                 }
@@ -146,6 +164,14 @@ namespace FunkosShopBack_end.Controllers
                 carrito.ListaProductosCarrito = [];
                 carrito.TotalCarritoEUR = 0;
 
+                _dbContext.SaveChanges();
+            }
+            else if (carritoLocal)
+            {
+                foreach (ProductoPedido producto in pedido.ListaProductosPedido)
+                {
+                    producto.Producto.Stock -= producto.CantidadProducto;
+                }
                 _dbContext.SaveChanges();
             }
 
