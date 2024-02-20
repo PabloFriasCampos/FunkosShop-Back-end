@@ -1,7 +1,10 @@
 ﻿using FunkosShopBack_end.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Recursos;
+
+
+using System.Data;
+
 
 namespace FunkosShopBack_end.Models
 {
@@ -27,7 +30,7 @@ namespace FunkosShopBack_end.Models
             bool guardado = false;
             Carrito carrito = new Carrito();
             carrito.Usuario = usuario;
-            if(Usuarios.FirstOrDefault(usuarioin => usuarioin.Correo == usuario.Correo 
+            if (Usuarios.FirstOrDefault(usuarioin => usuarioin.Correo == usuario.Correo
             || usuarioin.NombreUsuario == usuario.NombreUsuario) == null)
             {
                 Usuarios.Add(usuario);
@@ -49,7 +52,7 @@ namespace FunkosShopBack_end.Models
         {
             Usuario usuario = Usuarios.FirstOrDefault(usuario => usuario.Correo == correo && usuario.Contrasena == contrasena);
 
-            if(usuario != null)
+            if (usuario != null)
             {
                 return usuario.UsuarioID;
             }
@@ -67,8 +70,8 @@ namespace FunkosShopBack_end.Models
         {
             var listaProducto = ListaProductosCarrito.First(p => p.Producto.ProductoID == productoID && p.Carrito.CarritoID == carritoID);
             listaProducto.CantidadProducto += cantidad;
-            
-            if (listaProducto.CantidadProducto==0)
+
+            if (listaProducto.CantidadProducto == 0)
             {
                 ListaProductosCarrito.Remove(listaProducto);
             }
@@ -76,16 +79,24 @@ namespace FunkosShopBack_end.Models
             {
                 listaProducto.TotalProductoEUR = (double)(listaProducto.CantidadProducto * listaProducto.Producto.PrecioEUR);
             }
-            
+
             SaveChanges();
         }
 
         public bool productoYaEnCarrito(int productoID, int carritoID)
         {
             var listaExiste = ListaProductosCarrito.Where(p => p.Producto.ProductoID == productoID && p.Carrito.CarritoID == carritoID).ToList();
-            
+
             return listaExiste.IsNullOrEmpty();
         }
 
+        public bool enviaEmail(int idPedido)
+        {
+            
+            return false;
+        }
     }
 }
+
+    
+

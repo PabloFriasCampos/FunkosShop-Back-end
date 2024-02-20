@@ -12,6 +12,7 @@ using System.Numerics;
 using System.Globalization;
 using System.Text.Json;
 using Newtonsoft.Json;
+using FunkosShopBack_end.Resources;
 
 namespace FunkosShopBack_end.Controllers
 {
@@ -118,6 +119,7 @@ namespace FunkosShopBack_end.Controllers
 
             pedido.Pagado = success;
 
+               
             return success;
         }
 

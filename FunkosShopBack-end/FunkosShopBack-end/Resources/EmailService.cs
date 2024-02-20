@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Mail;
 
-namespace Recursos;
+namespace FunkosShopBack_end.Resources;
 
 internal class EmailService
 {
@@ -27,4 +27,5 @@ internal class EmailService
 
         await client.SendMailAsync(mail);
     }
+
 }
