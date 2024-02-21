@@ -24,10 +24,6 @@ internal class EmailService
         {
             IsBodyHtml = isHtml,
         };
-        string sCurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        string sFile = System.IO.Path.Combine(sCurrentDirectory, @"..\\..\\..\\wwwroot\\images\\1.png");
-        string sFilePath = Path.GetFullPath(sFile);
-        mail.Attachments.Add(new Attachment(sFilePath));
         await client.SendMailAsync(mail);
     }
 

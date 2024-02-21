@@ -1,15 +1,11 @@
 ﻿using FunkosShopBack_end.Models;
 using FunkosShopBack_end.Models.Entities;
 using FunkosShopBack_end.Models.Transaction;
-using Microsoft.AspNetCore.Http;
-using Nethereum.BlockchainProcessing.BlockStorage.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Nethereum.Hex.HexTypes;
-using Nethereum.RPC.Eth.DTOs;
 using Nethereum.RPC.TransactionReceipts;
 using Nethereum.Web3;
 using System.Numerics;
-using System.Globalization;
 using System.Text.Json;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
@@ -69,7 +65,7 @@ namespace FunkosShopBack_end.Controllers
             {
                 From = cuentaMetaMask,
                 To = OUR_WALLET,
-                Id = _dbContext.Pedidos.Count()+1,
+                Id = _dbContext.Pedidos.Count() + 1,
                 Value = new HexBigInteger(priceWei).HexValue,
                 Gas = new HexBigInteger(300000).HexValue, // Velocidad en en la que se hace la transacción
                 GasPrice = (await web3.Eth.GasPrice.SendRequestAsync()).HexValue
@@ -81,7 +77,7 @@ namespace FunkosShopBack_end.Controllers
                 UsuarioID = id,
                 FechaPedido = DateTime.Now,
                 TotalPedidoEUR = totalPedido,
-                TotalPedidoETH = totalPedido/ethereumEur,
+                TotalPedidoETH = totalPedido / ethereumEur,
                 WalletCliente = transactionToSing.From,
                 Value = transactionToSing.Value
             };
@@ -148,6 +144,37 @@ namespace FunkosShopBack_end.Controllers
             }
 
             pedido.Pagado = success;
+
+            if (success && !carritoLocal)
+            {
+                Carrito carrito = _dbContext.Carritos
+                    .Include(c => c.ListaProductosCarrito)
+                        .ThenInclude(p => p.Producto)
+                    .First(c => c.CarritoID == id);
+
+
+                foreach (ProductoCarrito producto in carrito.ListaProductosCarrito)
+                {
+                    producto.Producto.Stock -= producto.CantidadProducto;
+                }
+
+                carrito.ListaProductosCarrito = [];
+                carrito.TotalCarritoEUR = 0;
+
+                _dbContext.SaveChanges();
+            }
+            else if (success && carritoLocal)
+            {
+                foreach (ProductoPedido producto in pedido.ListaProductosPedido)
+                {
+                    producto.Producto.Stock -= producto.CantidadProducto;
+                }
+                _dbContext.SaveChanges();
+            }
+            if (success)
+            {
+                _dbContext.enviaEmail(pedidoID);
+            }
 
             return success;
         }
