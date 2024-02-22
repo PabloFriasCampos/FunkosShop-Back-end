@@ -8,6 +8,7 @@ using System.Security.Claims;
 using FunkosShopBack_end.Models.DTOs;
 using FunkosShopBack_end.Models.Entities;
 using FunkosShopBack_end.Models;
+using Microsoft.VisualBasic;
 
 
 namespace FunkosShopBack_end.Controllers
@@ -35,25 +36,72 @@ namespace FunkosShopBack_end.Controllers
             {
                 NombreUsuario = usuario.NombreUsuario,
                 Direccion = usuario.Direccion,
-                Correo = usuario.Correo
+                Correo = usuario.Correo,
+                Rol = usuario.Rol
             };
             return usuarioDTO;
         }
 
+        [HttpGet]
+        public ICollection<UsuarioDTO> GetUsers()
+        {
+            ICollection<Usuario> listaUsuarios = _dbContext.Usuarios.ToList();
+
+            ICollection<UsuarioDTO> listaDTO = [];
+            foreach (Usuario usuario in listaUsuarios)
+            {
+                UsuarioDTO usuarioDTO = new UsuarioDTO
+                {
+                    NombreUsuario = usuario.NombreUsuario,
+                    Direccion = usuario.Direccion,
+                    Correo = usuario.Correo,
+                    Rol = usuario.Rol
+                };
+                listaDTO.Add(usuarioDTO);
+            }
+            return listaDTO;
+        }
+
+        [HttpPut("modifyUserRole/{id}")]
+        public IActionResult ModifyUser([FromBody] string newRole, int id)
+        {
+
+            bool modificado = _dbContext.ModificarUsuario(new Usuario
+            {
+                UsuarioID = id,
+                Rol = newRole
+            });
+            return modificado ? Ok("Usuario modificado") : BadRequest("No existe dicho usuario");
+        }
+
+        [HttpDelete("deleteUser/{id}")]
+        public IActionResult DeleteUser(int id) 
+        {
+            bool borrado = false;
+            Usuario usuarioDel = _dbContext.Usuarios.FirstOrDefault(u => u.UsuarioID == id);
+            if (usuarioDel != null)
+            {
+                _dbContext.Remove(usuarioDel);
+                _dbContext.SaveChanges();
+                borrado = true;
+            }
+
+            return borrado ? Ok("Usuario borrado") : BadRequest("Fallo en la operación de borrado");
+        }
+
         [HttpPost("signup")]
-        public IActionResult RegistrarUsuario([FromBody] UsuarioDTO usuarioDTO)
+        public IActionResult RegistrarUsuario([FromBody] UsuarioDTO usuario)
         {
 
             bool resultado = _dbContext.RegistrarUsuario(new Usuario
             {
-                NombreUsuario = usuarioDTO.NombreUsuario,
-                Direccion = usuarioDTO.Direccion,
-                Correo = usuarioDTO.Correo,
-                Contrasena = PasswordHelper.Hash(usuarioDTO.Contrasena),
+                NombreUsuario = usuario.NombreUsuario,
+                Direccion = usuario.Direccion,
+                Correo = usuario.Correo,
+                Contrasena = PasswordHelper.Hash(usuario.Contrasena),
                 Rol = "USUARIO",
             });
-            return resultado ? Ok(resultado) : BadRequest(resultado);
-            
+            return resultado ? Ok("Registro completado") : BadRequest("Ya hay un usuario con ese correo y nombre de usuario");
         }
 
         [HttpPost("login")]

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using FunkosShopBack_end.Resources;
-
+using FunkosShopBack_end.Models.DTOs;
 using System.Data;
 
 
@@ -23,6 +23,19 @@ namespace FunkosShopBack_end.Models
         {
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             options.UseSqlite($"DataSource={baseDir}{DATABASE_PATH}");
+        }
+        public bool ModificarUsuario(Usuario usuario)
+        {
+            bool modificado = false;
+            Usuario usuarioMod = Usuarios.FirstOrDefault(u => u.UsuarioID == usuario.UsuarioID);
+            if (usuarioMod != null)
+            {
+                usuarioMod.Rol = usuario.Rol;
+                SaveChanges();
+                modificado = true;
+            }
+
+            return modificado;
         }
 
         public bool RegistrarUsuario(Usuario usuario)
@@ -88,7 +101,7 @@ namespace FunkosShopBack_end.Models
         public bool productoYaEnCarrito(int productoID, int carritoID)
         {
             var listaExiste = ListaProductosCarrito.Where(p => p.Producto.ProductoID == productoID && p.Carrito.CarritoID == carritoID).ToList();
-            enviaEmail(2);
+            
             return listaExiste.IsNullOrEmpty();
         }
 
