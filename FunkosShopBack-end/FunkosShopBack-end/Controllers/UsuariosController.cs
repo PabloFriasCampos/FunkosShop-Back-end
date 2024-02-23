@@ -162,22 +162,25 @@ namespace FunkosShopBack_end.Controllers
             return NoContent();
         }
 
-        [HttpGet("verificarEmail/{id}")]
-        public Boolean verificarEmail(int id, String email)
+        [HttpGet("verificarEmail/{email}")]
+        public bool verificarEmail(string email)
         {
-            var usuarioBBDD = _dbContext.Usuarios.Find(id);
-            if(usuarioBBDD.Correo == email)
+            var usuarios = _dbContext.Usuarios.ToList();
+            foreach (var usuario in usuarios)
             {
-                return true;
+                if (usuario.Correo == email)
+                {
+                    return true;
+                }
             }
             return false;
         }
 
         [HttpPut("modificarContrasena/{id}")]
-        public IActionResult modificarContrasena(int id, [FromBody] String contrasena)
+        public IActionResult modificarContrasena(int id, [FromBody] string contrasena)
         {
             var usuarioBBDD = _dbContext.Usuarios.Find(id);
-            usuarioBBDD.Contrasena = contrasena;
+            usuarioBBDD.Contrasena = PasswordHelper.Hash(contrasena);
             _dbContext.SaveChanges();
 
             return NoContent();
