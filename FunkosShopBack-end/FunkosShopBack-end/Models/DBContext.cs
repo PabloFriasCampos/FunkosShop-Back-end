@@ -168,7 +168,7 @@ namespace FunkosShopBack_end.Models
         }
         
 
-        public void enviaEmail(int idPedido)
+       async public void enviaEmail(int idPedido)
         {
             Pedido pedido = Pedidos
                                 .Include(p => p.ListaProductosPedido)
@@ -309,8 +309,8 @@ namespace FunkosShopBack_end.Models
                 </html>
                 """;
 
-            EmailService.SendMessageAsync(usuario.Correo, "Factura pedido", html, true);
-
+            await EmailService.SendMessageAsync(usuario.Correo, "Factura pedido", html, true);
+            
         }
     }
 }
