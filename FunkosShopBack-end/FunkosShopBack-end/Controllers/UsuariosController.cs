@@ -140,5 +140,51 @@ namespace FunkosShopBack_end.Controllers
             return modificado ? Ok() : BadRequest();
         }
 
+<<<<<<< HEAD
+=======
+        [HttpPut("modificarEmail/{id}")]
+        public IActionResult modificarEmail(int id, [FromBody] String correo)
+        {
+            var usuarioBBDD = _dbContext.Usuarios.Find(id);
+            usuarioBBDD.Correo = correo;
+            _dbContext.SaveChanges();
+
+            return NoContent();
+        }
+
+        [HttpGet("verificarEmail/{email}")]
+        public bool verificarEmail(string email)
+        {
+            var usuarios = _dbContext.Usuarios.ToList();
+            foreach (var usuario in usuarios)
+            {
+                if (usuario.Correo == email)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        [HttpPut("modificarContrasena/{id}")]
+        public IActionResult modificarContrasena(int id, [FromBody] string contrasena)
+        {
+            var usuarioBBDD = _dbContext.Usuarios.Find(id);
+            usuarioBBDD.Contrasena = PasswordHelper.Hash(contrasena);
+            _dbContext.SaveChanges();
+
+            return NoContent();
+        }
+
+        [HttpPut("modificarDireccion/{id}")]
+        public IActionResult modificarDireccion(int id, [FromBody] String direccion)
+        {
+            var usuarioBBDD = _dbContext.Usuarios.Find(id);
+            usuarioBBDD.Direccion = direccion;
+            _dbContext.SaveChanges();
+
+            return NoContent();
+        }
+>>>>>>> 7243fa2c8c7c43f62a7216797cb6605276347436
     }
 }
