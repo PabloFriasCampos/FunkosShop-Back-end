@@ -5,6 +5,7 @@ using FunkosShopBack_end.Resources;
 using FunkosShopBack_end.Models.DTOs;
 using System.Data;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Nethereum.Contracts.Standards.ENS.PublicResolver.ContractDefinition;
 
 
 namespace FunkosShopBack_end.Models
@@ -25,20 +26,81 @@ namespace FunkosShopBack_end.Models
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             options.UseSqlite($"DataSource={baseDir}{DATABASE_PATH}");
         }
-        public bool ModificarUsuario(Usuario usuario)
+        public bool ModifyUserRole(string newRole, int id)
         {
             bool modificado = false;
-            Usuario usuarioMod = Usuarios.FirstOrDefault(u => u.UsuarioID == usuario.UsuarioID);
+            Usuario usuarioMod = Usuarios.FirstOrDefault(u => u.UsuarioID == id);
             if (usuarioMod != null)
             {
-                usuarioMod.Rol = usuario.Rol;
+                usuarioMod.Rol = newRole;
                 SaveChanges();
                 modificado = true;
             }
 
             return modificado;
         }
+        public bool ModificarUsuario(UsuarioDTO usuario, int id)
+        {
+            bool modificado = false;
+            Usuario usuarioMod = Usuarios.FirstOrDefault(u => u.UsuarioID == id);
 
+            if (usuarioMod != null && !verificarEmail(usuario.Correo))
+            {
+                usuarioMod.NombreUsuario = usuario.NombreUsuario;
+                usuarioMod.Direccion = usuario.Direccion;
+                usuarioMod.Contrasena = PasswordHelper.Hash(usuario.Contrasena);
+                usuarioMod.Correo = usuario.Correo;
+                SaveChanges();
+                modificado = true;
+            }
+            
+
+            return modificado;
+        }
+
+        public bool verificarEmail(string correo)
+        {
+            bool encontrado = true;
+            if((Usuarios.FirstOrDefault(u=> u.Correo == correo) == default))
+            {
+                encontrado = false;
+            }
+           
+            return encontrado;
+        }
+
+        public bool ModificarProducto(Producto producto)
+        {
+            bool modificado = false;
+            Producto productoMod = Productos.FirstOrDefault(p => p.ProductoID == producto.ProductoID);
+            if (productoMod != null)
+            {
+                productoMod.NombreProducto = producto.NombreProducto;
+                productoMod.PrecioEUR = producto.PrecioEUR;
+                productoMod.Descripcion = producto.Descripcion;
+                productoMod.Categoria = producto.Categoria;
+                productoMod.Stock = producto.Stock;
+                int rowsAffected = SaveChanges();
+                modificado = (rowsAffected == 1) ? true : false;
+            }
+
+            return modificado;
+        }
+        public bool AddProduct(ProductoDTO productodto)
+        {
+            bool resultado = false;
+            
+            Productos.Add(new Producto { 
+                NombreProducto = productodto.NombreProducto,
+                PrecioEUR = productodto.PrecioEUR,
+                Stock = productodto.Stock,
+                Descripcion = productodto.Descripcion
+             });
+            int rowsWritten = SaveChanges();
+
+            resultado = (rowsWritten == 1) ? true : false;
+            return resultado;
+        }
         public bool RegistrarUsuario(Usuario usuario)
         {
             bool guardado = false;
@@ -98,7 +160,7 @@ namespace FunkosShopBack_end.Models
             
             SaveChanges();
         }
-
+        
         public bool productoYaEnCarrito(int productoID, int carritoID)
         {
             var listaExiste = ListaProductosCarrito.Where(p => p.Producto.ProductoID == productoID && p.Carrito.CarritoID == carritoID).ToList();
