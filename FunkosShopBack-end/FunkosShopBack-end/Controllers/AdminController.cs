@@ -18,9 +18,12 @@ namespace FunkosShopBack_end.Controllers
         }
 
         [HttpPost("newProduct")]
-        public IActionResult NewProduct([FromBody] ProductoDTO productodto)
+        public IActionResult NewProduct([FromBody] Producto producto)
         {
-            bool resultado = _dbContext.AddProduct(productodto);
+            bool resultado = false;
+            _dbContext.Productos.Add(producto);
+           int rows = _dbContext.SaveChanges();
+            if(rows==1) { resultado = true; }
             
             return resultado ? Ok() : BadRequest();
         }

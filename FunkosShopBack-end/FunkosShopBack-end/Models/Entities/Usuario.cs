@@ -3,7 +3,6 @@
 namespace FunkosShopBack_end.Models.Entities
 {
     [Index(nameof(Correo), IsUnique = true)]
-    [Index(nameof(NombreUsuario), IsUnique = true)]
     public class Usuario
     {
         public int UsuarioID { get; set; }
