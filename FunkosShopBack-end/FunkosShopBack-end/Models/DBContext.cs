@@ -4,8 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using FunkosShopBack_end.Resources;
 using FunkosShopBack_end.Models.DTOs;
 using System.Data;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Nethereum.Contracts.Standards.ENS.PublicResolver.ContractDefinition;
 
 
 namespace FunkosShopBack_end.Models
@@ -86,28 +84,13 @@ namespace FunkosShopBack_end.Models
 
             return modificado;
         }
-        public bool AddProduct(ProductoDTO productodto)
-        {
-            bool resultado = false;
-            
-            Productos.Add(new Producto { 
-                NombreProducto = productodto.NombreProducto,
-                PrecioEUR = productodto.PrecioEUR,
-                Stock = productodto.Stock,
-                Descripcion = productodto.Descripcion
-             });
-            int rowsWritten = SaveChanges();
-
-            resultado = (rowsWritten == 1) ? true : false;
-            return resultado;
-        }
+       
         public bool RegistrarUsuario(Usuario usuario)
         {
             bool guardado = false;
             Carrito carrito = new Carrito();
             carrito.Usuario = usuario;
-            if (Usuarios.FirstOrDefault(usuarioin => usuarioin.Correo == usuario.Correo
-            || usuarioin.NombreUsuario == usuario.NombreUsuario) == null)
+            if (Usuarios.FirstOrDefault(usuarioin => usuarioin.Correo == usuario.Correo) == null)
             {
                 Usuarios.Add(usuario);
                 Carritos.Add(carrito);

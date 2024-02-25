@@ -90,7 +90,7 @@ namespace FunkosShopBack_end.Controllers
                 Contrasena = PasswordHelper.Hash(usuario.Contrasena),
                 Rol = "USUARIO",
             });
-            return resultado ? Ok("Registro completado") : BadRequest("Ya hay un usuario con ese correo y nombre de usuario");
+            return resultado ? Ok() : BadRequest();
         }
 
         [HttpPost("login")]
