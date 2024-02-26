@@ -27,10 +27,16 @@ namespace FunkosShopBack_end.Controllers
             _dbContext = dbContext;
         }
 
-        [HttpGet]
-        public IEnumerable<Pedido> GetPedidos()
+        [HttpGet("Usuario/{id}")]
+        public IEnumerable<Pedido> GetPedidosUsuario(int id)
         {
-            return _dbContext.Pedidos.Include(pedido => pedido.ListaProductosPedido).ThenInclude(producto => producto.Producto);
+            return _dbContext.Pedidos.Include(pedido => pedido.ListaProductosPedido).ThenInclude(producto => producto.Producto).Where(pedido => pedido.UsuarioID == id && pedido.Pagado);
+        }
+
+        [HttpGet("{id}")]
+        public Pedido GetPedido(int id)
+        {
+            return _dbContext.Pedidos.Include(pedido => pedido.ListaProductosPedido).ThenInclude(producto => producto.Producto).First(pedido => pedido.PedidoID == id);
         }
 
         [HttpGet("ETH")]
