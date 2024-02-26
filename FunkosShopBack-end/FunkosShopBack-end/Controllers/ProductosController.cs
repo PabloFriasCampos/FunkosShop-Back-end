@@ -26,6 +26,12 @@ namespace FunkosShopBack_end.Controllers
                 });
         }
 
+        [HttpGet("ListaCompleta")]
+        public ICollection<Producto> GetProductos()
+        {
+            return _dbContext.Productos.ToList();
+        }
+
         [HttpGet("{id}")]
         public ActionResult<Producto> DetalleProducto(int id)
         {

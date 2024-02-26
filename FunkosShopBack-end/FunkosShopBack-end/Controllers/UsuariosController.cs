@@ -52,6 +52,7 @@ namespace FunkosShopBack_end.Controllers
             {
                 UsuarioDTO usuarioDTO = new UsuarioDTO
                 {
+                    UsuarioID = usuario.UsuarioID,
                     NombreUsuario = usuario.NombreUsuario,
                     Direccion = usuario.Direccion,
                     Correo = usuario.Correo,
