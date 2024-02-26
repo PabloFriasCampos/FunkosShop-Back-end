@@ -55,7 +55,6 @@ namespace FunkosShopBack_end.Models
                 usuarioMod.NombreUsuario = usuario.NombreUsuario;
                 usuarioMod.Direccion = usuario.Direccion;
                 usuarioMod.Correo = usuario.Correo;
-                usuarioMod.Contrasena = usuarioMod.Contrasena;
                 SaveChanges();
                 modificado = true;
             } else if (usuarioMod != null && usuarioMod.Correo == usuario.Correo && usuario.Contrasena.Length==0)
