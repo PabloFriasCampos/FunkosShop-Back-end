@@ -41,8 +41,7 @@ namespace FunkosShopBack_end.Models
         {
             bool modificado = false;
             Usuario usuarioMod = Usuarios.FirstOrDefault(u => u.UsuarioID == id);
-
-            if (usuarioMod != null && !verificarEmail(usuario.Correo))
+            if (usuarioMod != null && !verificarEmail(usuario.Correo) && usuario.Contrasena.Length>0)
             {
                 usuarioMod.NombreUsuario = usuario.NombreUsuario;
                 usuarioMod.Direccion = usuario.Direccion;
@@ -51,7 +50,30 @@ namespace FunkosShopBack_end.Models
                 SaveChanges();
                 modificado = true;
             }
-            
+            else if(usuarioMod != null && !verificarEmail(usuario.Correo) && usuario.Contrasena.Length==0)
+            {
+                usuarioMod.NombreUsuario = usuario.NombreUsuario;
+                usuarioMod.Direccion = usuario.Direccion;
+                usuarioMod.Correo = usuario.Correo;
+                usuarioMod.Contrasena = usuarioMod.Contrasena;
+                SaveChanges();
+                modificado = true;
+            } else if (usuarioMod != null && usuarioMod.Correo == usuario.Correo && usuario.Contrasena.Length==0)
+            {
+                usuarioMod.NombreUsuario = usuario.NombreUsuario;
+                usuarioMod.Direccion = usuario.Direccion;
+                SaveChanges();
+                modificado = true;
+            }
+            else if (usuarioMod != null && usuarioMod.Correo == usuario.Correo && usuario.Contrasena.Length>0)
+            {
+                usuarioMod.NombreUsuario = usuario.NombreUsuario;
+                usuarioMod.Direccion = usuario.Direccion;
+                usuarioMod.Contrasena = PasswordHelper.Hash(usuario.Contrasena);
+                SaveChanges();
+                modificado = true;
+            }
+
 
             return modificado;
         }
@@ -59,7 +81,7 @@ namespace FunkosShopBack_end.Models
         public bool verificarEmail(string correo)
         {
             bool encontrado = true;
-            if((Usuarios.FirstOrDefault(u=> u.Correo == correo) == default))
+            if((Usuarios.FirstOrDefault(u=> u.Correo == correo) == null))
             {
                 encontrado = false;
             }
@@ -67,10 +89,10 @@ namespace FunkosShopBack_end.Models
             return encontrado;
         }
 
-        public bool ModificarProducto(Producto producto)
+        public bool ModificarProducto(Producto producto, int id)
         {
             bool modificado = false;
-            Producto productoMod = Productos.FirstOrDefault(p => p.ProductoID == producto.ProductoID);
+            Producto productoMod = Productos.FirstOrDefault(p => p.ProductoID == id);
             if (productoMod != null)
             {
                 productoMod.NombreProducto = producto.NombreProducto;
@@ -78,8 +100,8 @@ namespace FunkosShopBack_end.Models
                 productoMod.Descripcion = producto.Descripcion;
                 productoMod.Categoria = producto.Categoria;
                 productoMod.Stock = producto.Stock;
-                int rowsAffected = SaveChanges();
-                modificado = (rowsAffected == 1) ? true : false;
+                SaveChanges();
+                modificado = true;
             }
 
             return modificado;
@@ -88,10 +110,11 @@ namespace FunkosShopBack_end.Models
         public bool RegistrarUsuario(Usuario usuario)
         {
             bool guardado = false;
-            Carrito carrito = new Carrito();
-            carrito.Usuario = usuario;
+           
             if (Usuarios.FirstOrDefault(usuarioin => usuarioin.Correo == usuario.Correo) == null)
             {
+                Carrito carrito = new Carrito();
+                carrito.Usuario = usuario;
                 Usuarios.Add(usuario);
                 Carritos.Add(carrito);
                 SaveChanges();

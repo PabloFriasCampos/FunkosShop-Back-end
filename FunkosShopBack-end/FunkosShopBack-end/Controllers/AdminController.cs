@@ -36,10 +36,10 @@ namespace FunkosShopBack_end.Controllers
             return listaProductos;
         }
 
-        [HttpPut("modifyProduct")]
-        public IActionResult modifyProduct([FromBody] Producto producto)
+        [HttpPut("modifyProduct{id}")]
+        public IActionResult modifyProduct([FromBody] Producto producto, int id)
         {
-            bool resultado = _dbContext.ModificarProducto(producto);
+            bool resultado = _dbContext.ModificarProducto(producto, id);
 
             return resultado ? Ok() : BadRequest();
         }
