@@ -19,14 +19,14 @@ namespace FunkosShopBack_end.Controllers
         }
 
         [HttpPost("{productoID}/{carritoID}/{cantidadProducto}")]
-        public void AgregaProductoACarrito(int productoID, int carritoID, int cantidadProducto)
+        public IActionResult AgregaProductoACarrito([FromRoute]int productoID, [FromRoute] int carritoID, [FromRoute] int cantidadProducto)
         {
 
             Carrito carrito = _dbContext.Carritos.Find(carritoID);
 
             Producto productoToAgregar = _dbContext.Productos.Find(productoID);
 
-            if (_dbContext.productoYaEnCarrito(productoID, carritoID))
+            if (_dbContext.productoYaEnCarrito(productoID, carritoID) == null)
             {
                 ProductoCarrito productoCarrito = new ProductoCarrito
                 {
@@ -45,7 +45,10 @@ namespace FunkosShopBack_end.Controllers
             else
             {
                 _dbContext.modificarCantidad(productoID, carritoID, cantidadProducto);
+                _dbContext.SaveChanges();
             }
+
+            return Ok();
         }
     }
 }

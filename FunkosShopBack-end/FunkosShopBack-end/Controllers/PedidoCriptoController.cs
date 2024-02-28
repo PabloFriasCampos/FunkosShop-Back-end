@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FunkosShopBack_end.Controllers
 {
-    [Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "ADMIN,USUARIO")]
     [ApiController]
     [Route("api/[controller]")]
     public class PedidoCriptoController : ControllerBase

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FunkosShopBack_end.Controllers
 {
-    [Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "ADMIN,USUARIO")]
     [Route("api/[controller]")]
     [ApiController]
     public class CarritosController : ControllerBase
