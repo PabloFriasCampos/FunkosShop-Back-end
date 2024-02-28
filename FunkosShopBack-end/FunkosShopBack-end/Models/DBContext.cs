@@ -166,10 +166,11 @@ namespace FunkosShopBack_end.Models
             SaveChanges();
         }
         
-        public bool productoYaEnCarrito(int productoID, int carritoID)
+        public int productoYaEnCarrito(int productoID, int carritoID)
         {
-            var listaExiste = ListaProductosCarrito.Where(p => p.Producto.ProductoID == productoID && p.Carrito.CarritoID == carritoID).ToList();
-            return listaExiste.IsNullOrEmpty();
+            List<ProductoCarrito> listaExiste = ListaProductosCarrito.Where(p => p.Producto.ProductoID == productoID && p.Carrito.CarritoID == carritoID).ToList();
+            listaExiste.Count();
+            return listaExiste.Count();
         }
         
 

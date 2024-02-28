@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FunkosShopBack_end.Controllers
 {
-    [Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "USUARIO,ADMIN")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductosCarritoController : ControllerBase
@@ -19,14 +19,14 @@ namespace FunkosShopBack_end.Controllers
         }
 
         [HttpPost("{productoID}/{carritoID}/{cantidadProducto}")]
-        public IActionResult AgregaProductoACarrito([FromRoute]int productoID, [FromRoute] int carritoID, [FromRoute] int cantidadProducto)
+        public void AgregaProductoACarrito(int productoID, int carritoID, int cantidadProducto)
         {
 
             Carrito carrito = _dbContext.Carritos.Find(carritoID);
 
             Producto productoToAgregar = _dbContext.Productos.Find(productoID);
 
-            if (_dbContext.productoYaEnCarrito(productoID, carritoID) == null)
+            if (_dbContext.productoYaEnCarrito(productoID, carritoID) == 0)
             {
                 ProductoCarrito productoCarrito = new ProductoCarrito
                 {
@@ -48,7 +48,6 @@ namespace FunkosShopBack_end.Controllers
                 _dbContext.SaveChanges();
             }
 
-            return Ok();
         }
     }
 }
