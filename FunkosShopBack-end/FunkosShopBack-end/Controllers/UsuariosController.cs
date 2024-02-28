@@ -9,10 +9,12 @@ using FunkosShopBack_end.Models.DTOs;
 using FunkosShopBack_end.Models.Entities;
 using FunkosShopBack_end.Models;
 using Microsoft.VisualBasic;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace FunkosShopBack_end.Controllers
 {
+    [Authorize(Roles = "ADMIN")]
     [Route("api/[controller]")]
     [ApiController]
     public class UsuariosController : ControllerBase
@@ -21,6 +23,13 @@ namespace FunkosShopBack_end.Controllers
         // Se obtiene por inyecciom los parametros preestablecidos para crear los token
         private readonly TokenValidationParameters _tokenParameters;
 
+       /* [HttpGet("read")]
+        public void ReadToken()
+        {
+            string id = User.FindFirst("id").Value;
+            string role = User.FindFirst(ClaimTypes.Role).Value;
+        }
+       */
         public UsuariosController(DBContext dbContext, IOptionsMonitor<JwtBearerOptions> jwtOptions)
         {
             _dbContext = dbContext;
@@ -41,44 +50,8 @@ namespace FunkosShopBack_end.Controllers
             };
             return usuarioDTO;
         }
-
-        [HttpGet]
-        public ICollection<UsuarioDTO> GetUsers()
-        {
-            ICollection<Usuario> listaUsuarios = _dbContext.Usuarios.ToList();
-
-            ICollection<UsuarioDTO> listaDTO = [];
-            foreach (Usuario usuario in listaUsuarios)
-            {
-                UsuarioDTO usuarioDTO = new UsuarioDTO
-                {
-                    UsuarioID = usuario.UsuarioID,
-                    NombreUsuario = usuario.NombreUsuario,
-                    Direccion = usuario.Direccion,
-                    Correo = usuario.Correo,
-                    Rol = usuario.Rol
-                };
-                listaDTO.Add(usuarioDTO);
-            }
-            return listaDTO;
-        }
-
-
-        [HttpDelete("deleteUser/{id}")]
-        public IActionResult DeleteUser(int id) 
-        {
-            bool borrado = false;
-            Usuario usuarioDel = _dbContext.Usuarios.FirstOrDefault(u => u.UsuarioID == id);
-            if (usuarioDel != null)
-            {
-                _dbContext.Remove(usuarioDel);
-                _dbContext.SaveChanges();
-                borrado = true;
-            }
-
-            return borrado ? Ok("Usuario borrado") : BadRequest("Fallo en la operación de borrado");
-        }
-
+        
+        [AllowAnonymous]
         [HttpPost("signup")]
         public IActionResult RegistrarUsuario([FromBody] UsuarioDTO usuario)
         {
@@ -93,21 +66,21 @@ namespace FunkosShopBack_end.Controllers
             });
             return resultado ? Ok() : BadRequest();
         }
-
+        [AllowAnonymous]
         [HttpPost("login")]
         public IActionResult IniciarSesion([FromBody] UsuarioDTO usuarioDTO)
         {
-            int usuarioId = _dbContext.AutenticarUsuario(usuarioDTO.Correo, PasswordHelper.Hash(usuarioDTO.Contrasena));
+            Usuario usuario = _dbContext.AutenticarUsuario(usuarioDTO.Correo, PasswordHelper.Hash(usuarioDTO.Contrasena));
 
-            if(usuarioId != -1)
+            if(usuario != null)
             {
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     // Aqui se anade los datos para autorizar al usuario
                     Claims = new Dictionary<string, object>
                     {
-                        { "id", Guid.NewGuid().ToString() },
-                        { ClaimTypes.Role, "USUARIO" }
+                        { "id", usuario.UsuarioID },
+                        { ClaimTypes.Role, usuario.Rol}
                     },
                     // Aqui indicamos cuando cu�ndo caduca el token
                     Expires = DateTime.UtcNow.AddDays(30),
@@ -120,18 +93,18 @@ namespace FunkosShopBack_end.Controllers
                 // Creamos el token y se lo devolvemos al usuario logeado
                 JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
                 SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-                string stringToken = tokenHandler.WriteToken(token);
-                stringToken += ";" + usuarioId;
+                /*string stringToken = tokenHandler.WriteToken(token);
+                stringToken += ";" + usuario.UsuarioID;*/
 
                 
-                return Ok(stringToken);
+                return Ok(tokenHandler.WriteToken(token));
             }
 
             // Si el usuario no existe, lo indicamos
             return Unauthorized();
 
         }
-
+        
         [HttpPut("modifyUser/{id}")]
         public IActionResult ModifyUser([FromBody] UsuarioDTO usuario, int id)
         {

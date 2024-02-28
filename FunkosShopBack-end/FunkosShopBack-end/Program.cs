@@ -1,6 +1,9 @@
 
 using FunkosShopBack_end.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;
@@ -26,7 +29,23 @@ namespace FunkosShopBack_end
             });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme,
+                            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                            {
+                                BearerFormat = "JWT",
+                                Name = "Authorization",
+                                Description = "qwertyuiopasdfijasengiouasengpizjfshgs510g65sd0h6g2x0s6xyv0bdt16ghjklñzxcvbnm",
+                                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                                Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+                                Scheme = JwtBearerDefaults.AuthenticationScheme
+                            });
+                options.OperationFilter<SecurityRequirementsOperationFilter>(true, JwtBearerDefaults.AuthenticationScheme);
+            }) ;
+            
+                
+            
 
             builder.Services.AddScoped<DBContext>();
             builder.Services.AddTransient<DBSeeder>();

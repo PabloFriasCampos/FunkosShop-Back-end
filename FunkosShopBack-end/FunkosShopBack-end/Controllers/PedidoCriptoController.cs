@@ -10,9 +10,11 @@ using System.Text.Json;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using FunkosShopBack_end.Resources;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FunkosShopBack_end.Controllers
 {
+    [Authorize(Roles = "ADMIN")]
     [ApiController]
     [Route("api/[controller]")]
     public class PedidoCriptoController : ControllerBase

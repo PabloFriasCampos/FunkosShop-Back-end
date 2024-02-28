@@ -129,16 +129,16 @@ namespace FunkosShopBack_end.Models
             SaveChanges();
         }
 
-        public int AutenticarUsuario(string correo, string contrasena)
+        public Usuario AutenticarUsuario(string correo, string contrasena)
         {
             Usuario usuario = Usuarios.FirstOrDefault(usuario => usuario.Correo == correo && usuario.Contrasena == contrasena);
 
             if (usuario != null)
             {
-                return usuario.UsuarioID;
+                return usuario;
             }
 
-            return -1;
+            return usuario;
         }
 
         public void RegistraListaProductoCarrito(ProductoCarrito productoCarrito)

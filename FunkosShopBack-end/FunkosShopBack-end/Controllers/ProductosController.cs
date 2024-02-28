@@ -1,5 +1,6 @@
 ﻿using FunkosShopBack_end.Models;
 using FunkosShopBack_end.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FunkosShopBack_end.Controllers

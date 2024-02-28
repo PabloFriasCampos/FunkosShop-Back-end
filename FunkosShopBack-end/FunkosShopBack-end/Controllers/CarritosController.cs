@@ -3,9 +3,11 @@ using FunkosShopBack_end.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FunkosShopBack_end.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FunkosShopBack_end.Controllers
 {
+    [Authorize(Roles = "ADMIN")]
     [Route("api/[controller]")]
     [ApiController]
     public class CarritosController : ControllerBase
