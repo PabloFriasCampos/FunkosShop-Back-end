@@ -1,4 +1,5 @@
 ﻿using FunkosShopBack_end.Models.Entities;
+using FunkosShopBack_end.Resources;
 
 namespace FunkosShopBack_end.Models
 {
@@ -50,7 +51,23 @@ namespace FunkosShopBack_end.Models
                 new Producto() { NombreProducto = "LUFFY", PrecioEUR = 13.45M, Descripcion = "Funko pop", Categoria = "ANIME", Stock = 10 }
             ];
 
+            Usuario usuario = new Usuario
+            {
+                NombreUsuario = "ADMIN",
+                Direccion = "ADMIN",
+                Correo = "ADMIN",
+                Contrasena = PasswordHelper.Hash("ADMIN"),
+                Rol = "ADMIN"
+            };
+
+            Carrito carrito = new Carrito 
+            { 
+                Usuario = usuario,
+            };
+
             await _dbContext.Productos.AddRangeAsync(productos);
+            await _dbContext.Usuarios.AddAsync(usuario);
+            await _dbContext.Carritos.AddAsync(carrito);
         }
 
     }
