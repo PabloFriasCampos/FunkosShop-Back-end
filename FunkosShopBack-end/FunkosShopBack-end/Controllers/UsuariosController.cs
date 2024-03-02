@@ -60,7 +60,7 @@ namespace FunkosShopBack_end.Controllers
             {
                 NombreUsuario = usuario.NombreUsuario,
                 Direccion = usuario.Direccion,
-                Correo = usuario.Correo,
+                Correo = usuario.Correo.ToLower(),
                 Contrasena = PasswordHelper.Hash(usuario.Contrasena),
                 Rol = "USUARIO",
             });
@@ -70,7 +70,7 @@ namespace FunkosShopBack_end.Controllers
         [HttpPost("login")]
         public IActionResult IniciarSesion([FromBody] UsuarioDTO usuarioDTO)
         {
-            Usuario usuario = _dbContext.AutenticarUsuario(usuarioDTO.Correo, PasswordHelper.Hash(usuarioDTO.Contrasena));
+            Usuario usuario = _dbContext.AutenticarUsuario(usuarioDTO.Correo.ToLower(), PasswordHelper.Hash(usuarioDTO.Contrasena));
 
             if(usuario != null)
             {

@@ -41,30 +41,30 @@ namespace FunkosShopBack_end.Models
         {
             bool modificado = false;
             Usuario usuarioMod = Usuarios.FirstOrDefault(u => u.UsuarioID == id);
-            if (usuarioMod != null && !verificarEmail(usuario.Correo) && usuario.Contrasena.Length>0)
+            if (usuarioMod != null && !verificarEmail(usuario.Correo.ToLower()) && usuario.Contrasena.Length>0)
             {
                 usuarioMod.NombreUsuario = usuario.NombreUsuario;
                 usuarioMod.Direccion = usuario.Direccion;
                 usuarioMod.Contrasena = PasswordHelper.Hash(usuario.Contrasena);
-                usuarioMod.Correo = usuario.Correo;
+                usuarioMod.Correo = usuario.Correo.ToLower();
                 SaveChanges();
                 modificado = true;
             }
-            else if(usuarioMod != null && !verificarEmail(usuario.Correo) && usuario.Contrasena.Length==0)
+            else if(usuarioMod != null && !verificarEmail(usuario.Correo.ToLower()) && usuario.Contrasena.Length==0)
             {
                 usuarioMod.NombreUsuario = usuario.NombreUsuario;
                 usuarioMod.Direccion = usuario.Direccion;
-                usuarioMod.Correo = usuario.Correo;
+                usuarioMod.Correo = usuario.Correo.ToLower();
                 SaveChanges();
                 modificado = true;
-            } else if (usuarioMod != null && usuarioMod.Correo == usuario.Correo && usuario.Contrasena.Length==0)
+            } else if (usuarioMod != null && usuarioMod.Correo.ToLower() == usuario.Correo.ToLower() && usuario.Contrasena.Length==0)
             {
                 usuarioMod.NombreUsuario = usuario.NombreUsuario;
                 usuarioMod.Direccion = usuario.Direccion;
                 SaveChanges();
                 modificado = true;
             }
-            else if (usuarioMod != null && usuarioMod.Correo == usuario.Correo && usuario.Contrasena.Length>0)
+            else if (usuarioMod != null && usuarioMod.Correo.ToLower() == usuario.Correo.ToLower() && usuario.Contrasena.Length>0)
             {
                 usuarioMod.NombreUsuario = usuario.NombreUsuario;
                 usuarioMod.Direccion = usuario.Direccion;
@@ -80,7 +80,7 @@ namespace FunkosShopBack_end.Models
         public bool verificarEmail(string correo)
         {
             bool encontrado = true;
-            if((Usuarios.FirstOrDefault(u=> u.Correo == correo) == null))
+            if((Usuarios.FirstOrDefault(u=> u.Correo.ToLower() == correo.ToLower()) == null))
             {
                 encontrado = false;
             }
@@ -110,7 +110,7 @@ namespace FunkosShopBack_end.Models
         {
             bool guardado = false;
            
-            if (Usuarios.FirstOrDefault(usuarioin => usuarioin.Correo == usuario.Correo) == null)
+            if (Usuarios.FirstOrDefault(usuarioin => usuarioin.Correo.ToLower() == usuario.Correo.ToLower()) == null)
             {
                 Carrito carrito = new Carrito();
                 carrito.Usuario = usuario;
@@ -131,7 +131,7 @@ namespace FunkosShopBack_end.Models
 
         public Usuario AutenticarUsuario(string correo, string contrasena)
         {
-            Usuario usuario = Usuarios.FirstOrDefault(usuario => usuario.Correo == correo && usuario.Contrasena == contrasena);
+            Usuario usuario = Usuarios.FirstOrDefault(usuario => usuario.Correo.ToLower() == correo.ToLower() && usuario.Contrasena == contrasena);
 
             if (usuario != null)
             {
