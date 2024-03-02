@@ -1,6 +1,7 @@
 ﻿using FunkosShopBack_end.Models;
 using FunkosShopBack_end.Models.DTOs;
 using FunkosShopBack_end.Models.Entities;
+using FunkosShopBack_end.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,10 +13,12 @@ namespace FunkosShopBack_end.Controllers
     public class AdminController : ControllerBase
     {
         private DBContext _dbContext;
+        private readonly FileService _fileService;
 
-        public AdminController(DBContext dbContext)
+        public AdminController(DBContext dbContext, FileService fileService)
         {
             _dbContext = dbContext;
+            _fileService = fileService;
         }
 
         [HttpPost("newProduct")]
@@ -25,8 +28,10 @@ namespace FunkosShopBack_end.Controllers
             _dbContext.Productos.Add(producto);
            int rows = _dbContext.SaveChanges();
             if(rows==1) { resultado = true; }
+
+            int id = _dbContext.Productos.Count();
             
-            return resultado ? Ok() : BadRequest();
+            return resultado ? Ok(id) : BadRequest();
         }
 
         
@@ -85,6 +90,18 @@ namespace FunkosShopBack_end.Controllers
             }
 
             return borrado ? Ok() : BadRequest();
+        }
+
+        [HttpPost("image/{id}")]
+        [Consumes("multipart/form-data")]
+        public async Task<string> Upload(int id, [FromForm] IFormFile image)
+        {
+            using Stream stream = image.OpenReadStream();
+            string imageName = $"{id}.png";
+            string hostUrl = $"{Request.Scheme}://{Request.Host}/";
+            string imageUrl = await _fileService.SaveAsync(stream, imageName);
+
+            return hostUrl + imageUrl;
         }
 
     }

@@ -1,5 +1,6 @@
 
 using FunkosShopBack_end.Models;
+using FunkosShopBack_end.Resources;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -18,6 +19,8 @@ namespace FunkosShopBack_end
 
             // Configuramos para que el directorio de trabajo sea donde está el ejecutable
             Directory.SetCurrentDirectory(AppContext.BaseDirectory);
+            // Creamos el directorio wwwroot en le cual se van a anadir los archivos estaticos
+            Directory.CreateDirectory("wwwroot");
 
             var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +52,7 @@ namespace FunkosShopBack_end
 
             builder.Services.AddScoped<DBContext>();
             builder.Services.AddTransient<DBSeeder>();
+            builder.Services.AddSingleton<FileService>();
 
             if (builder.Environment.IsDevelopment())
             {
