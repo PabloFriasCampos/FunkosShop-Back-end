@@ -31,8 +31,7 @@ namespace FunkosShopBack_end.Models
             if (usuarioMod != null)
             {
                 usuarioMod.Rol = newRole;
-                SaveChanges();
-                modificado = true;
+                if (SaveChanges() > 0) { modificado = true; }
             }
 
             return modificado;
@@ -47,44 +46,37 @@ namespace FunkosShopBack_end.Models
                 usuarioMod.Direccion = usuario.Direccion;
                 usuarioMod.Contrasena = PasswordHelper.Hash(usuario.Contrasena);
                 usuarioMod.Correo = usuario.Correo.ToLower();
-                SaveChanges();
-                modificado = true;
+                if (SaveChanges() > 0) { modificado = true; }
             }
             else if(usuarioMod != null && !verificarEmail(usuario.Correo.ToLower()) && usuario.Contrasena.Length==0)
             {
                 usuarioMod.NombreUsuario = usuario.NombreUsuario;
                 usuarioMod.Direccion = usuario.Direccion;
                 usuarioMod.Correo = usuario.Correo.ToLower();
-                SaveChanges();
-                modificado = true;
+                if (SaveChanges() > 0) { modificado = true; }
             } else if (usuarioMod != null && usuarioMod.Correo.ToLower() == usuario.Correo.ToLower() && usuario.Contrasena.Length==0)
             {
                 usuarioMod.NombreUsuario = usuario.NombreUsuario;
                 usuarioMod.Direccion = usuario.Direccion;
-                SaveChanges();
-                modificado = true;
+                if (SaveChanges() > 0) { modificado = true; }
             }
             else if (usuarioMod != null && usuarioMod.Correo.ToLower() == usuario.Correo.ToLower() && usuario.Contrasena.Length>0)
             {
                 usuarioMod.NombreUsuario = usuario.NombreUsuario;
                 usuarioMod.Direccion = usuario.Direccion;
                 usuarioMod.Contrasena = PasswordHelper.Hash(usuario.Contrasena);
-                SaveChanges();
-                modificado = true;
+                if (SaveChanges() > 0) { modificado = true; }
             }
-
-
             return modificado;
         }
 
         public bool verificarEmail(string correo)
         {
-            bool encontrado = true;
-            if((Usuarios.FirstOrDefault(u=> u.Correo.ToLower() == correo.ToLower()) == null))
+            bool encontrado = false;
+            if((Usuarios.FirstOrDefault(u=> u.Correo.ToLower() == correo.ToLower()) != null))
             {
-                encontrado = false;
+                encontrado = true;
             }
-           
             return encontrado;
         }
 
@@ -99,10 +91,8 @@ namespace FunkosShopBack_end.Models
                 productoMod.Descripcion = producto.Descripcion;
                 productoMod.Categoria = producto.Categoria;
                 productoMod.Stock = producto.Stock;
-                SaveChanges();
-                modificado = true;
+                if (SaveChanges() > 0) { modificado = true; }
             }
-
             return modificado;
         }
        
@@ -116,17 +106,11 @@ namespace FunkosShopBack_end.Models
                 carrito.Usuario = usuario;
                 Usuarios.Add(usuario);
                 Carritos.Add(carrito);
-                SaveChanges();
-                guardado = true;
+                
+                if (SaveChanges()> 0){ guardado = true; }
             }
 
             return guardado;
-        }
-
-        public void RegistrarProducto(Producto producto)
-        {
-            Productos.Add(producto);
-            SaveChanges();
         }
 
         public Usuario AutenticarUsuario(string correo, string contrasena)
@@ -160,6 +144,7 @@ namespace FunkosShopBack_end.Models
             else
             {
                 listaProducto.TotalProductoEUR = (double)(listaProducto.CantidadProducto * listaProducto.Producto.PrecioEUR);
+                
             }
 
             

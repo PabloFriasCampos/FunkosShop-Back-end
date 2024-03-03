@@ -19,12 +19,17 @@ internal class EmailService
             UseDefaultCredentials = false,
             Credentials = new NetworkCredential(EMAIL_FROM, PASSWORD_EMAIL_FROM)
         };
-
-        MailMessage mail = new MailMessage(EMAIL_FROM, to, subject, body)
+        try
         {
-            IsBodyHtml = isHtml,
-        };
-        await client.SendMailAsync(mail);
+            MailMessage mail = new MailMessage(EMAIL_FROM, to, subject, body)
+            {
+                IsBodyHtml = isHtml,
+            };
+            await client.SendMailAsync(mail);
+        } catch (Exception ex)
+        {
+
+        }
     }
 
 }

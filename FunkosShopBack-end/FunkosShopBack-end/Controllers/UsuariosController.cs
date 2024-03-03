@@ -8,7 +8,6 @@ using System.Security.Claims;
 using FunkosShopBack_end.Models.DTOs;
 using FunkosShopBack_end.Models.Entities;
 using FunkosShopBack_end.Models;
-using Microsoft.VisualBasic;
 using Microsoft.AspNetCore.Authorization;
 
 
@@ -23,13 +22,6 @@ namespace FunkosShopBack_end.Controllers
         // Se obtiene por inyecciom los parametros preestablecidos para crear los token
         private readonly TokenValidationParameters _tokenParameters;
 
-       /* [HttpGet("read")]
-        public void ReadToken()
-        {
-            string id = User.FindFirst("id").Value;
-            string role = User.FindFirst(ClaimTypes.Role).Value;
-        }
-       */
         public UsuariosController(DBContext dbContext, IOptionsMonitor<JwtBearerOptions> jwtOptions)
         {
             _dbContext = dbContext;
@@ -38,17 +30,21 @@ namespace FunkosShopBack_end.Controllers
         }
 
         [HttpGet("{id}")]
-        public UsuarioDTO Get(int id)
+        public IActionResult Get(int id)
         {
+            bool encontrado = false;
+            UsuarioDTO usuarioDTO = new UsuarioDTO();
             Usuario usuario = _dbContext.Usuarios.Find(id);
-            UsuarioDTO usuarioDTO = new UsuarioDTO
+           if(usuario != null)
             {
-                NombreUsuario = usuario.NombreUsuario,
-                Direccion = usuario.Direccion,
-                Correo = usuario.Correo,
-                Rol = usuario.Rol
-            };
-            return usuarioDTO;
+                usuarioDTO.UsuarioID = usuario.UsuarioID;
+                usuarioDTO.NombreUsuario = usuario.NombreUsuario;
+                usuarioDTO.Direccion = usuario.Direccion;
+                usuarioDTO.Correo = usuario.Correo;
+                usuarioDTO.Rol = usuario.Rol;
+                encontrado = true;
+            }
+            return encontrado ? Ok(usuarioDTO) : BadRequest();
         }
         
         [AllowAnonymous]
@@ -66,6 +62,7 @@ namespace FunkosShopBack_end.Controllers
             });
             return resultado ? Ok() : BadRequest();
         }
+
         [AllowAnonymous]
         [HttpPost("login")]
         public IActionResult IniciarSesion([FromBody] UsuarioDTO usuarioDTO)
@@ -89,30 +86,20 @@ namespace FunkosShopBack_end.Controllers
                         _tokenParameters.IssuerSigningKey,
                         SecurityAlgorithms.HmacSha256Signature)
                 };
-
-                // Creamos el token y se lo devolvemos al usuario logeado
+                // Creamos el token y se lo devolvemos al usuario loggeado
                 JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
                 SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-                /*string stringToken = tokenHandler.WriteToken(token);
-                stringToken += ";" + usuario.UsuarioID;*/
 
-                
                 return Ok(tokenHandler.WriteToken(token));
             }
-
-            // Si el usuario no existe, lo indicamos
             return Unauthorized();
-
         }
         
         [HttpPut("modifyUser/{id}")]
         public IActionResult ModifyUser([FromBody] UsuarioDTO usuario, int id)
         {
-
             bool modificado = _dbContext.ModificarUsuario(usuario, id);
-            
             return modificado ? Ok() : BadRequest();
         }
-
     }
 }
