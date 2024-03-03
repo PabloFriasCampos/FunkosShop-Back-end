@@ -99,7 +99,7 @@ namespace FunkosShopBack_end.Controllers
         public IActionResult ModifyUser([FromBody] UsuarioDTO usuario, int id)
         {
             bool modificado = _dbContext.ModificarUsuario(usuario, id);
-            return modificado ? Ok() : BadRequest();
+            return modificado ? Ok("1") : BadRequest("2");
         }
     }
 }
