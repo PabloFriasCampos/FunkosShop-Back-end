@@ -9,7 +9,6 @@ using System.Numerics;
 using System.Text.Json;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
-using FunkosShopBack_end.Resources;
 using Microsoft.AspNetCore.Authorization;
 
 namespace FunkosShopBack_end.Controllers

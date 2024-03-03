@@ -31,7 +31,8 @@ namespace FunkosShopBack_end.Models
             if (usuarioMod != null)
             {
                 usuarioMod.Rol = newRole;
-                if (SaveChanges() > 0) { modificado = true; }
+                SaveChanges();
+                modificado = true;
             }
 
             return modificado;
@@ -46,26 +47,30 @@ namespace FunkosShopBack_end.Models
                 usuarioMod.Direccion = usuario.Direccion;
                 usuarioMod.Contrasena = PasswordHelper.Hash(usuario.Contrasena);
                 usuarioMod.Correo = usuario.Correo.ToLower();
-                if (SaveChanges() > 0) { modificado = true; }
+                SaveChanges();
+                modificado = true;
             }
             else if(usuarioMod != null && !verificarEmail(usuario.Correo.ToLower()) && usuario.Contrasena.Length==0)
             {
                 usuarioMod.NombreUsuario = usuario.NombreUsuario;
                 usuarioMod.Direccion = usuario.Direccion;
-                usuarioMod.Correo = usuario.Correo.ToLower();
-                if (SaveChanges() > 0) { modificado = true; }
+                usuarioMod.Correo = usuario.Correo.ToLower(); 
+                SaveChanges();
+                modificado = true;
             } else if (usuarioMod != null && usuarioMod.Correo.ToLower() == usuario.Correo.ToLower() && usuario.Contrasena.Length==0)
             {
                 usuarioMod.NombreUsuario = usuario.NombreUsuario;
-                usuarioMod.Direccion = usuario.Direccion;
-                if (SaveChanges() > 0) { modificado = true; }
+                usuarioMod.Direccion = usuario.Direccion; 
+                SaveChanges();
+                modificado = true;
             }
             else if (usuarioMod != null && usuarioMod.Correo.ToLower() == usuario.Correo.ToLower() && usuario.Contrasena.Length>0)
             {
                 usuarioMod.NombreUsuario = usuario.NombreUsuario;
                 usuarioMod.Direccion = usuario.Direccion;
                 usuarioMod.Contrasena = PasswordHelper.Hash(usuario.Contrasena);
-                if (SaveChanges() > 0) { modificado = true; }
+                SaveChanges();
+                modificado = true;
             }
             return modificado;
         }
@@ -91,7 +96,8 @@ namespace FunkosShopBack_end.Models
                 productoMod.Descripcion = producto.Descripcion;
                 productoMod.Categoria = producto.Categoria;
                 productoMod.Stock = producto.Stock;
-                if (SaveChanges() > 0) { modificado = true; }
+                SaveChanges();
+                modificado = true;
             }
             return modificado;
         }
@@ -106,8 +112,8 @@ namespace FunkosShopBack_end.Models
                 carrito.Usuario = usuario;
                 Usuarios.Add(usuario);
                 Carritos.Add(carrito);
-                
-                if (SaveChanges()> 0){ guardado = true; }
+                SaveChanges();
+                guardado = true;
             }
 
             return guardado;
