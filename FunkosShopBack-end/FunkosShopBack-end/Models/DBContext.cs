@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using FunkosShopBack_end.Resources;
 using FunkosShopBack_end.Models.DTOs;
 using System.Data;
+using System.Text;
 
 
 namespace FunkosShopBack_end.Models
@@ -307,7 +308,23 @@ namespace FunkosShopBack_end.Models
                 """;
 
             await EmailService.SendMessageAsync(usuario.Correo, "Factura pedido", html, true);
-            
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    // URL del servidor Arduino
+                    string url = "http://192.168.42.248/post"; // Reemplaza con la dirección IP de tu Arduino
+
+                    String mensaje = "El usuario: " + usuario.NombreUsuario + "ha realizado un nuevo pedido.";
+                    // Construye los datos del cuerpo de la solicitud
+                    var content = new StringContent(mensaje, Encoding.UTF8, "text/plain");
+
+                    // Envía la solicitud POST
+                    HttpResponseMessage response = await client.PostAsync(url, content);
+
+                }
+            } catch (Exception ex) { }
+              
         }
     }
 }
